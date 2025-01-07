@@ -2,9 +2,9 @@ POST http://localhost:8888/api/auth/signup
 Content-Type: application/json
 
 {
-    "fullname": "Elvis Vela",
-    "username": "Elveal",
-    "email": "elvis@outlook.com",
+    "fullname": "Anjhelo Vela",
+    "username": "LOHAN",
+    "email": "anjhelo@outlook.com",
     "password": "hola11"
 }
 
@@ -17,6 +17,15 @@ Content-Type: application/json
     "username": "Elveal",
     "password": "hola11"
 }
+###
+
+POST http://localhost:8888/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "LOHAN",
+    "password": "hola11"
+}
 
 ###
 
@@ -25,3 +34,11 @@ POST http://localhost:8888/api/auth/logout
 ###
 
 POST http://localhost:8888/api/auth/getMe
+
+### User Endpoints ###
+
+GET http://localhost:8888/api/user/profile/Elveal
+
+###
+
+POST http://localhost:8888/api/user/follow/677c7899c1061dd4af3606c2
