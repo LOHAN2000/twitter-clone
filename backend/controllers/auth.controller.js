@@ -10,8 +10,6 @@ export class AuthController {
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-      console.log(email)
-
       if (!emailRegex.test(email)) {
         return res.status(400).json({message: 'Invalid email format'})
       }

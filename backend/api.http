@@ -23,8 +23,8 @@ POST http://localhost:8888/api/auth/login
 Content-Type: application/json
 
 {
-    "username": "LOHAN",
-    "password": "hola11"
+    "username": "Angheluchi",
+    "password": "lohan123"
 }
 
 ###
@@ -42,3 +42,20 @@ GET http://localhost:8888/api/user/profile/Elveal
 ###
 
 POST http://localhost:8888/api/user/follow/677c7899c1061dd4af3606c2
+
+###
+
+GET http://localhost:8888/api/user/suggested
+
+###
+
+POST http://localhost:8888/api/user/update
+Content-Type: application/json
+
+{
+  "bio": "Hola me llamo LoHan",
+  "profileImg": "",
+  "currentPassword": "lohan123",
+  "newPassword": "hola123",
+  "coverImg": "https://static.bandainamcoent.eu/high/dark-souls/dark-souls-3/00-page-setup/ds3_game-thumbnail.jpg"
+}
