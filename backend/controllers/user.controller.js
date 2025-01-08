@@ -4,7 +4,7 @@ import Notification from "../models/notification.model.js"
 import User from "../models/user.model.js"
 
 export class UserController {
-  static async getProfile (req, res){
+  static async getProfile (req, res) {
     try {
       const { username } = req.params
   
