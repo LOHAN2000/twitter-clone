@@ -58,6 +58,7 @@ export class UserController {
           from: currentUser._id,
           to: userToModify._id
         })
+        
         await newNotification.save()
 
         res.status(200).json({message: 'User follow successfullly'})

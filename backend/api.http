@@ -24,7 +24,7 @@ Content-Type: application/json
 
 {
     "username": "Angheluchi",
-    "password": "lohan123"
+    "password": "hola123"
 }
 
 ###
@@ -53,9 +53,52 @@ POST http://localhost:8888/api/user/update
 Content-Type: application/json
 
 {
-  "bio": "Hola me llamo LoHan",
+  "bio": "Hola me llamo Elvis vela",
   "profileImg": "",
   "currentPassword": "lohan123",
   "newPassword": "hola123",
   "coverImg": "https://static.bandainamcoent.eu/high/dark-souls/dark-souls-3/00-page-setup/ds3_game-thumbnail.jpg"
 }
+
+### POST ENDPOINTS
+
+POST http://localhost:8888/api/post/create
+Content-Type: application/json
+
+{
+    "text": "Hola me llamo Anjhelo",
+    "img": "https://static.bandainamcoent.eu/high/dark-souls/dark-souls-3/00-page-setup/ds3_game-thumbnail.jpg"
+}
+
+###
+
+DELETE http://localhost:8888/api/post/677efd89401f8ce3d25aa861
+
+###
+
+POST http://localhost:8888/api/post/comment/678004ab41f0756815638dfb
+Content-Type: application/json
+
+{
+    "text": "Jaja un comentario"
+}
+
+###
+
+POST http://localhost:8888/api/post/like/678004ab41f0756815638dfb
+
+### 
+
+GET http://localhost:8888/api/post/all
+
+### 
+
+GET http://localhost:8888/api/post/likes/677c7899c1061dd4af3606c2
+
+### 
+
+GET http://localhost:8888/api/post/following/677c392411db448633732bae
+
+###
+
+GET http://localhost:8888/api/post/user/Angheluchi
