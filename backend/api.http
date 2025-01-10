@@ -102,3 +102,17 @@ GET http://localhost:8888/api/post/following/677c392411db448633732bae
 ###
 
 GET http://localhost:8888/api/post/user/Angheluchi
+
+### Notifications
+
+GET http://localhost:8888/api/notification
+
+###
+
+DELETE http://localhost:8888/api/notification
+
+###
+
+DELETE http://localhost:8888/api/notification/67814b686aae81bd2941da37
+
+
