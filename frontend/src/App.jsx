@@ -1,11 +1,17 @@
-import { useState } from 'react'
-
+import { Route, Routes } from "react-router-dom"
+import { Home } from "./pages/home/Home.jsx"
+import { SignupPage } from "./pages/auth/signup/SignupPage.jsx"
+import { LoginPage } from "./pages/auth/login/LoginPage.jsx"
 
 function App() {
 
   return (
-    <div className='flex items-center justify-center h-screen'>
-      <h1 className='capitalize'>Hola me llamo anjhelo</h1>
+    <div>
+      <Routes>
+        <Route path='/' element={<Home/>}/>
+        <Route path='/login' element={<LoginPage/>}/>
+        <Route path='/singup' element={<SignupPage/>}/>
+      </Routes>
     </div>
   )
 }
