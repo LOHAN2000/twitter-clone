@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { GoHomeFill } from "react-icons/go";
 import { MdOutlineEmail } from "react-icons/md";
 import { FaRegUser } from "react-icons/fa6";
+import { CreatePost } from './createPost';
+import { Post } from '../../components/common/Post';
+import { Sidebar } from '../../components/common/Sidebar';
 
 export const Home = () => {
 
@@ -26,45 +29,40 @@ export const Home = () => {
   },[])
 
   return (
-    <div className="flex h-screen w-full mx-auto justify-center items-center">
-      <div className="grid grid-cols-1 sm:grid-cols-[30%_40%_30%] w-full sm:w-4/5 h-full">
-
-        {!isMobile && (
-          <>
-            <div className='flex w-full h-full'>
-              menu
-            </div>
-            <div className='flex h-full items-start'>
-              <div role="tablist" className="tabs tabs-bordered w-full grid grid-cols-2 h-[5%]">
-                <a onClick={() => setHomeSection('forYou')} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Para tí</a>
-                <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
-              </div>
-            </div>
-            <div className='flex w-full h-full'>
-              notification
-            </div>
-          </>
-        )}
-        
-
-        {/* Mobile View */}
-
-        {activeView === 'home' && isMobile && (
-          <div className='flex h-full items-start'>
+    <div className="flex-[4_4_0] h-screen w-full">
+      {!isMobile && (
+        <>
+          <div className='flex flex-col h-full items-start '>
             <div role="tablist" className="tabs tabs-bordered w-full grid grid-cols-2 h-[5%]">
-              <a onClick={() => setHomeSection('forYou')} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''}`}>Para tí</a>
-              <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''}`}>Siguiendo </a>
+              <a onClick={() => setHomeSection('forYou')} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Para tí</a>
+              <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
             </div>
+            <CreatePost/>
+            <Post/>
           </div>
-        )}
-        {activeView === 'notification' && isMobile && (
-          <div>notification</div>
-        )}
-        {activeView === 'profile' && isMobile && (
-          <div>profile</div>
-        )}
+        </>
+      )}
+      
+
+      {/* Mobile View */}
+
+      {activeView === 'home' && isMobile && (
+        <div className='flex flex-col h-full items-start'>
+        <div role="tablist" className="tabs tabs-bordered w-full grid grid-cols-2 h-[5%]">
+          <a onClick={() => setHomeSection('forYou')} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Para tí</a>
+          <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
+        </div>
+          <CreatePost/>
+          <Post/>
+        </div>
+      )}
+      {activeView === 'notification' && isMobile && (
+        <div>notification</div>
+      )}
+      {activeView === 'profile' && isMobile && (
+        <div>profile</div>
+      )}
         
-      </div>
       {isMobile && (
         <div className="btm-nav">
           <button onClick={() => setActiveView('home')} className={`${activeView === 'home' ? 'active' : ''}  `}>
