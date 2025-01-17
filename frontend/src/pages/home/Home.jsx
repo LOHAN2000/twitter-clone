@@ -29,15 +29,24 @@ export const Home = () => {
   },[])
 
   return (
-    <div className="flex-[4_4_0] h-screen w-full">
+    <div className="flex-[3_3_0] w-full">
       {!isMobile && (
         <>
-          <div className='flex flex-col h-full items-start '>
-            <div role="tablist" className="tabs tabs-bordered w-full grid grid-cols-2 h-[5%]">
+          <div className='flex flex-col items-start '>
+            <div role="tablist" className="tabs tabs-bordered w-full grid grid-cols-2 h-10">
               <a onClick={() => setHomeSection('forYou')} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Para tí</a>
               <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
             </div>
             <CreatePost/>
+            <Post/>
+            <Post/>
+            <Post/>
+            <Post/>
+            <Post/>
+            <Post/>
+            <Post/>
+            <Post/>
+            <Post/>
             <Post/>
           </div>
         </>

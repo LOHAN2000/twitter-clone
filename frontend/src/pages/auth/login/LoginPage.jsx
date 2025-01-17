@@ -31,13 +31,13 @@ export const LoginPage = () => {
                 <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
               </svg>
               <input type="text" name='username' className="grow sm:text-md " autoComplete="username" placeholder="Username" onChange={(e) => setFormData({...formdata, [e.target.name]:e.target.value})}/>
-            </label>
-            <label className="input input-bordered flex items-center w-full sm:w-4/5 gap-2 h-8 md:h-10">
-              <MdOutlinePassword className="h-5 w-5 lg:h-7 lg:w-7 opacity-70"/>
-              <input type="password" name='password' className="grow sm:text-md " autoComplete="current-password" placeholder="password" onChange={(e) => setFormData({...formdata, [e.target.name]:e.target.value})}/>
-            </label>
-            <button className='w-full sm:w-4/5 btn btn-primary btn-circle text-white font-extrabold md:text-lg'>Iniciar sesión</button>
-            <p className='text-md md:text-lg'>¿No tienes una cuenta? <a href='/singup' className='text-primary'>Regístrate</a></p>
+          </label>
+          <label className="input input-bordered flex items-center w-full sm:w-4/5 gap-2 h-8 md:h-10">
+            <MdOutlinePassword className="h-5 w-5 lg:h-7 lg:w-7 opacity-70"/>
+            <input type="password" name='password' className="grow sm:text-md " autoComplete="current-password" placeholder="password" onChange={(e) => setFormData({...formdata, [e.target.name]:e.target.value})}/>
+          </label>
+          <button className='w-full sm:w-4/5 btn btn-primary btn-circle text-white font-extrabold md:text-lg'>Iniciar sesión</button>
+          <p className='text-md md:text-lg'>¿No tienes una cuenta? <a href='/singup' className='text-primary'>Regístrate</a></p>
         </form>
       </div>
     </div>

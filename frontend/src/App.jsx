@@ -30,7 +30,7 @@ function App() {
     },[])
 
   return (
-    <div className="h-screen max-w-[85rem] flex mx-auto">
+    <div className=" max-w-[85rem] flex mx-auto">
       {!(location.pathname === '/login' || location.pathname === '/singup') && !isMobile && <Sidebar />}
         <Routes>
           <Route path='/' element={<Home/>}/>
