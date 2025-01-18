@@ -16,7 +16,7 @@ export const Sidebar = () => {
       <div className='sticky top-0 left-0 flex flex-col  h-screen w-4/5 mx-auto justify-between py-2'>
         <div className='flex flex-col justify-start gap-y-2'>
           <Link to='/'>
-            <XSvg className='fill-white w-[20%] hover:bg-[rgb(231,233,234,0.1)] rounded-full p-2'/>
+            <XSvg className='fill-white w-[18%] hover:bg-[rgb(231,233,234,0.1)] rounded-full p-2'/>
           </Link>
           <div>
             <ul className='flex flex-col gap-y-1'>

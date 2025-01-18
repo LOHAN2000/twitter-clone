@@ -144,7 +144,7 @@ export class UserController {
         return res.status(400).json({message: 'Username is already taken'})
       }
 
-      if (fullname && fullname.length > 40 ) {
+      if (fullname && fullname.length > 30 ) {
         return res.status(400).json({message: 'Full name must be less than 40 characters'})
       }
 

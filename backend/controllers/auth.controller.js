@@ -14,6 +14,13 @@ export class AuthController {
         return res.status(400).json({message: 'Invalid email format'})
       }
 
+      if (fullname.length > 30) {
+        return res.status(400).json({message : 'Full name must be less than 40 characters'})
+      }
+
+      if (username.length > 10 ) {
+        return res.status(400).json({message: 'Username must be less than 10 characters'})
+      }
       const existingUser = await User.findOne({ username })
 
       if (existingUser) {

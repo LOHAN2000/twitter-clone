@@ -3,7 +3,7 @@ import { GoHomeFill } from "react-icons/go";
 import { MdOutlineEmail } from "react-icons/md";
 import { FaRegUser } from "react-icons/fa6";
 import { CreatePost } from './createPost';
-import { Post } from '../../components/common/Post';
+import { Posts } from '../../components/common/Posts.jsx';
 import { Sidebar } from '../../components/common/Sidebar';
 
 export const Home = () => {
@@ -38,16 +38,7 @@ export const Home = () => {
               <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
             </div>
             <CreatePost/>
-            <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
+            <Posts/>
           </div>
         </>
       )}
@@ -62,7 +53,7 @@ export const Home = () => {
           <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
         </div>
           <CreatePost/>
-          <Post/>
+          <Posts/>
         </div>
       )}
       {activeView === 'notification' && isMobile && (
