@@ -4,7 +4,6 @@ import { MdOutlineEmail } from "react-icons/md";
 import { FaRegUser } from "react-icons/fa6";
 import { CreatePost } from './createPost';
 import { Posts } from '../../components/common/Posts.jsx';
-import { Sidebar } from '../../components/common/Sidebar';
 
 export const Home = () => {
 
@@ -29,7 +28,7 @@ export const Home = () => {
   },[])
 
   return (
-    <div className="flex-[3_3_0] w-full">
+    <div className="flex-[4_4_0] w-full">
       {!isMobile && (
         <>
           <div className='flex flex-col items-start '>

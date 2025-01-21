@@ -23,7 +23,7 @@ export const CreatePost = () => {
   const isPending = false
   return (
     <div className='flex flex-row w-full pt-7 sm:pt-6 px-4 gap-x-3 border-b border-[rgb(47,51,54)]'>
-      <img src='/Twitter_default_profile_400x400.png' className='object-container w-[40px] h-[40px] sm:w-[12%] sm:h-[12%] md:w-[8%] md:h-[8%] rounded-full'/>
+      <img src='/Twitter_default_profile_400x400.png' className='object-container w-[40px] h-[40px]  sm:w-[6%] sm:h-[6%] rounded-full'/>
       <div className='w-full flex flex-col items-center justify-center'>
         <form className="flex w-full flex-col gap-y-3 overflow-hidden">
           <textarea onChange={(e) => setFormData({...formData, [e.target.name]:e.target.value})} name="text" type="text" placeholder="¡¿Qué está pasando ahora?!" className="max-w-[338px] lg:max-w-[500px] py-2 max-h-40 resize-none overflow-y-auto border-none focus:outline-none bg-inherit text-md"/> 

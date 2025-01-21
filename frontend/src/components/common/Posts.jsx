@@ -18,7 +18,11 @@ export const Posts = () => {
         </div>
       )}
       {!isLoading && (
-        <Post/>
+        <>
+          <Post/>
+          <Post/>
+          <Post/>
+        </>
       )}
     </>
   )
