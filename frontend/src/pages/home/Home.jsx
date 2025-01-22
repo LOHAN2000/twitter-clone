@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { GoHomeFill } from "react-icons/go";
-import { MdOutlineEmail } from "react-icons/md";
-import { FaRegUser } from "react-icons/fa6";
 import { CreatePost } from './createPost';
 import { Posts } from '../../components/common/Posts.jsx';
+import { useLocation } from 'react-router-dom';
 
 export const Home = () => {
 
   const [isMobile, setIsMobile] = useState(false)
   const [activeView, setActiveView] = useState('home')
   const [homeSection, setHomeSection] = useState('forYou')
+  const location = useLocation()
 
   useEffect(() => {
 
@@ -32,7 +31,7 @@ export const Home = () => {
       {!isMobile && (
         <>
           <div className='flex flex-col items-start '>
-            <div role="tablist" className="tabs tabs-bordered w-full grid grid-cols-2 h-10">
+            <div role="tablist" className="tabs tabs-bordered w-full grid grid-cols-2 h-10 sticky top-0 bg-black">
               <a onClick={() => setHomeSection('forYou')} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Para tí</a>
               <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
             </div>
@@ -42,7 +41,6 @@ export const Home = () => {
         </>
       )}
       
-
       {/* Mobile View */}
 
       {activeView === 'home' && isMobile && (
@@ -53,26 +51,6 @@ export const Home = () => {
         </div>
           <CreatePost/>
           <Posts/>
-        </div>
-      )}
-      {activeView === 'notification' && isMobile && (
-        <div>notification</div>
-      )}
-      {activeView === 'profile' && isMobile && (
-        <div>profile</div>
-      )}
-        
-      {isMobile && (
-        <div className="btm-nav">
-          <button onClick={() => setActiveView('home')} className={`${activeView === 'home' ? 'active' : ''}  `}>
-            <GoHomeFill className='h-2/5 w-2/5'/>
-          </button>
-          <button onClick={() => setActiveView('notification')} className={`${activeView === 'notification' ? 'active' : ''} `}>
-            <MdOutlineEmail className='h-2/5 w-2/5'/>
-          </button>
-          <button onClick={() => setActiveView('profile')} className={`${activeView === 'profile' ? 'active' : ''} `}>
-            <FaRegUser className='h-2/5 w-2/5'/>
-          </button>
         </div>
       )}
     </div>

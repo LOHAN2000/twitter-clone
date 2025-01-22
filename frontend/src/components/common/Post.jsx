@@ -18,6 +18,8 @@ export const Post = () => {
     console.log(response)
   }
 
+  const samePerson = false
+
   return (
     <div className="flex flex-row px-4 py-3.5 gap-x-3.5 w-full border-b border-[rgb(47,51,54)]">
       <img
@@ -31,9 +33,14 @@ export const Post = () => {
             <h1 className='text-sm md:text-md font-extralight text-[rgb(47,51,54)] max-w-24 sm:max-w-24 md:max-w-28 lg:max-w-24 xl:max-w-36 truncate'>@UsernameUsername Username</h1>
             <h1 className='text-md font-extralight text-[rgb(47,51,54)] truncate'>Date</h1>
           </div>
-          <SlOptions className='text-[rgb(47,51,54)]'/>
+          <div className='dropdown dropdown-end'>
+            <SlOptions tabIndex={0} role='button' className='text-[rgb(47,51,54)]'/>
+            <ul tabIndex={0} className='dropdown-content menu bg-base-100 rounded-lg z-[1] w-44 sm:w-36 md:w-52 p-2 shadow'>
+              <li onClick={() => document.getElementById('modal_delete').showModal()} className='text-md font-semibold text-red-600'><a>Eliminar</a></li>
+            </ul>
+          </div>
         </div>
-        <h1>hcomentacior dliasfl kjlfkdjsalk  jfldkajlfkdjsaj l kjlkjsad ljfldkajlfkdjsajlkjsdalk ja lksjalk jsladkjslkaj</h1>
+        <h1></h1>
         <div className='mt-2'>
           <img src='https://images.unsplash.com/photo-1737142928495-ca54258b1e81?q=80&w=2159&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' className='object-contain rounded-2xl'/>
         </div>
@@ -47,7 +54,7 @@ export const Post = () => {
       </div>
       {/* MODAL */}
       <dialog id="my_modal_1" className="modal">
-        <div className="modal-box p-4 pt-9 flex flex-col rounded-xl max-w-md  md:max-w-screen-sm">
+        <div className="modal-box p-4 pt-12 flex flex-col rounded-xl max-w-md  md:max-w-screen-sm">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute left-1 top-1">✕</button>
           </form>
@@ -80,6 +87,18 @@ export const Post = () => {
         <form method="dialog" className="modal-backdrop">
           <button className=''>close</button>
         </form>
+      </dialog>
+      <dialog id="modal_delete" className='modal'>
+        <div className='modal-box px-6 py-5 flex flex-col rounded-xl max-w-72 sm:max-w-64  md:max-w-80'>
+          <div className='flex flex-col justify-center gap-y-2'>
+            <h1 className='text-center font-extrabold text-xl'>¿Deseas eliminar post?</h1>
+            <p className='font-extralight text-md text-gray-500'>Esta acción no se pude revertir, y se eliminará de tu perfil, de la cronología de las cuentas que te sigan y de los resultados de búsqueda.</p>
+            <button className={`my-1 btn btn-error rounded-full text-white ${samePerson ? '' : 'btn-disabled'}`}>{samePerson ? 'Eliminar' : 'No hay permisos'}</button>
+            <form method="dialog" className='flex flex-row'> 
+              <button className='btn btn-secondary rounded-full text-white w-full'>Cancelar</button>
+            </form>
+          </div>
+        </div>
       </dialog>
     </div>
   )
