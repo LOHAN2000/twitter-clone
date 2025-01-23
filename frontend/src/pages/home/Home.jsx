@@ -31,7 +31,7 @@ export const Home = () => {
       {!isMobile && (
         <>
           <div className='flex flex-col items-start '>
-            <div role="tablist" className="tabs tabs-bordered w-full grid grid-cols-2 h-10 sticky top-0 bg-black">
+            <div role="tablist" className="tabs tabs-bordered w-[99.8%] mx-auto grid grid-cols-2 h-10 sticky top-0 bg-black">
               <a onClick={() => setHomeSection('forYou')} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Para tí</a>
               <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
             </div>
