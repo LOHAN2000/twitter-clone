@@ -1,14 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { SlOptions } from "react-icons/sl";
-import { FaRegComment } from "react-icons/fa";
 import { LuRepeat2 } from "react-icons/lu";
-import { FcLike } from "react-icons/fc";
 import { Comment } from './Comment';
 
 
 export const Post = () => {
 
-  const formRef = useRef()
   const [response, setResponse] = useState({
     response: ''
   })
@@ -72,7 +69,7 @@ export const Post = () => {
             </div>
             <div className='flex flew-row gap-x-3 w-full'>
               <img src='/Twitter_default_profile_400x400.png' className='object-container w-[40px] h-[40px]  sm:w-[7%] sm:h-[7%] rounded-full'/>
-              <form ref={formRef} onSubmit={onSubmit} className='flex overflow-x-hidden w-full'>
+              <form onSubmit={onSubmit} className='flex overflow-x-hidden w-full'>
                 <textarea onChange={(e) => setResponse({...response, [e.target.name]: e.target.value})} name="response" type="text" placeholder="Postea tu respuesta ahora" className="py-2 max-h-48 w-full h-20 resize-none overflow-y-auto border-none focus:outline-none bg-inherit text-md"/> 
               </form>
             </div>

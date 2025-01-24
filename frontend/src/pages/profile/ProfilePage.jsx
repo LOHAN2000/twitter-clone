@@ -8,10 +8,19 @@ import { FaRegEdit } from "react-icons/fa";
 
 export const ProfilePage = () => {
   
-  const isMyProfile = true
+  const isMyProfile = false
   const [homeSection, setHomeSection] = useState('forYou')
   const [imgProfile, setImageProfile] = useState('')
-  const [bannerProfile, setBannerProfile] = useState(null)
+  const [bannerProfile, setBannerProfile] = useState('')
+  const [dataForm, setDataForm] = useState({
+    name: '',
+    username: '',
+    bio: '',
+    link: '',
+    email: '',
+    currentPassword: '',
+    newPassword: ''
+  })
 
   const imgProfRef = useRef(null)
   const bannerProfRef = useRef(null)
@@ -26,6 +35,11 @@ export const ProfilePage = () => {
       }
       reader.readAsDataURL(file)
     }
+  }
+
+  const onSubmit = (e) => {
+    e.preventDefault()
+    console.log(dataForm)
   }
 
   return (
@@ -44,7 +58,7 @@ export const ProfilePage = () => {
           <img src={bannerProfile || './BannerPlaceholder.png'} className='object-cover object-center w-full h-52 sm:h-48 md:h-56'/>
           <input type='file' hidden ref={bannerProfRef} onChange={(e) => {handleImageCHange(e, 'bannerProfile')}}/>
           {isMyProfile && (
-            <FaRegEdit onClick={() => bannerProfRef.current.click()} className='absolute top-1 right-1 w-11 h-11 group-hover/imgBanner:opacity-100 opacity-0 bg-gray-300/50 p-2 rounded-xl cursor-pointer'/>
+            <FaRegEdit onClick={() => bannerProfRef.current.click()} className='absolute top-1 right-1 w-11 h-11 group-hover/imgBanner:opacity-100 opacity-0 bg-gray-400/50 p-2 rounded-xl cursor-pointer'/>
           )}
           <div className='relative group/imgProfile '>
             <img src={imgProfile || './Twitter_default_profile_400x400.png'} className='absolute w-32 h-32 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full object-cover object-center border-4 border-black -bottom-16 ms-4'/>
@@ -55,12 +69,15 @@ export const ProfilePage = () => {
           </div>
         </div>
         {isMyProfile ? (
-          <div className='flex justify-end items-center m-3'>
-            <button onClick={() => document.getElementById('modal_edit').showModal()} className='btn btn-outline sm:px-5 md:px-7 border-[rgb(47,51,54)] rounded-full text-white'>Editar perfil</button>
+          <div className='flex justify-end items-center m-3 gap-x-2'>
+            <button onClick={() => document.getElementById('modal_edit').showModal()} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-3'>Editar perfil</button>
+            {(imgProfile || bannerProfile) && (
+              <button className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>Confirmar</button>
+            )}
           </div>
         ) : (
           <div className='flex justify-end items-center m-3'>
-            <button className='btn btn-outline sm:px-5 md:px-7 border-[rgb(47,51,54)] rounded-full text-white'>Seguir</button>
+            <button className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>Seguir</button>
           </div>
         )}
         <div className='flex flex-col m-4 mt-5 gap-y-1 overflow-hidden'>
@@ -91,12 +108,38 @@ export const ProfilePage = () => {
           <div className='flex flex-col gap-y-2'>
             <div className='flex flex-row justify-between ps-8 items-center'>
               <h1>Editar perfil</h1>
-              <button className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-3'>Confirmar</button>
+              <button onClick={onSubmit} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-3'>Confirmar</button>
             </div>
-            <div className='relative mt-2'>
-              <input type="text" id='name' placeholder="" className="input input-bordered w-full text-base pt-5 peer"/>
-              <label for="name" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Nombre</label>
-            </div>
+            <form onSubmit={onSubmit} className='grid grid-cols-2 justify-center items-center mt-2 gap-x-1 gap-y-2'>
+              <div className='relative'>
+                <input type="text" id='name' placeholder="" name='name' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <label htmlFor="name" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Nombre</label>
+              </div>
+              <div className='relative'>
+                <input type="text" id='username' placeholder="" name='username' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <label htmlFor="username" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Username</label>
+              </div>
+              <div className='relative flex col-span-2 '>
+                <textarea type="text" id='bio' placeholder="" name='bio' className="textarea textarea-bordered w-full text-base pt-5 h-10 resize-none overflow-y-auto focus:h-20 peer transition-all duration-200" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <label htmlFor="bio" className='absolute left-4 text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-[0px] peer-focus:text-blue-500 peer-focus:bg-black bg-black mt-[1px] h-5 w-[95%]'>Bio</label>
+              </div>
+              <div className='relative'>
+                <input type="text" id='Link' placeholder="" name='link' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <label htmlFor="Link" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Link</label>
+              </div>
+              <div className='relative'>
+                <input type="text" id='Email' placeholder="" name='email' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <label htmlFor="Email" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Email</label>
+              </div>
+              <div className='relative'>
+                <input type="text" id='password' placeholder="" name='currentPassword' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <label htmlFor="password" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Current password</label>
+              </div>
+              <div className='relative'>
+                <input type="text" id='password1' placeholder="" name='newPassword' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <label htmlFor="password1" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>New password</label>
+              </div>
+            </form>
           </div>
         </div>
         <form method="dialog" className="modal-backdrop">
