@@ -14,9 +14,9 @@ export const CreatePost = () => {
   const handleImageRef = (e) => {
     const file = e.target.files[0]
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader() 
       reader.readAsDataURL(file)
-      reader.onload = () => { setImageForm( reader.result )}
+      reader.onload = () => {setImageForm( reader.result )}
     }
   }
 

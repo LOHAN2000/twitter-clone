@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { CreatePost } from './createPost';
+import { CreatePost } from './CreatePost.jsx';
 import { Posts } from '../../components/common/Posts.jsx';
 import { useLocation } from 'react-router-dom';
 
