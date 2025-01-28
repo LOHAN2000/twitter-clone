@@ -43,7 +43,7 @@ function App() {
           <Route path='/profile' element={<ProfilePage/>}/>
         </Routes>
       {!(location.pathname === '/login' || location.pathname === '/singup') && !isMobile && <RightPanel />}
-      {isMobile && (
+      {isMobile && !(location.pathname === '/login' || location.pathname === '/singup') && (
         <div className="btm-nav">
           <Link to={'/'} className={`${location.pathname === '/' ? 'active' : ''}`}>
             <button className="">

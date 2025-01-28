@@ -1,12 +1,29 @@
 import React, { useState } from 'react'
 import { XSvg } from '../../../components/svgs/Xsvg'
 import { MdOutlinePassword } from 'react-icons/md'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 export const LoginPage = () => {
 
   const [formdata, setFormData] = useState({
     username: '',
     password: ''
+  })
+
+  const queryClient = useQueryClient()
+
+  const { mutation, isPending } = useMutation({
+    mutationFn: async (formdata) => {
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          con
+        })
+      } catch (error) {
+        toast.error()
+      }
+    }
   })
 
   const onSubmit = (e) => {
@@ -20,8 +37,8 @@ export const LoginPage = () => {
         <div className='flex justify-center'>
             <XSvg className='w-[8%] sm:w-[4%] transition  fill-white'/>
         </div>
-        <form onSubmit={onSubmit} className='flex flex-col justify-center items-center w-5/6 md:w-4/6 lg:w-2/6 mx-auto gap-y-3'>
-          <h1 className='font-semibold sm:text-xl mt-2'>Inicia sesión en X</h1>
+        <form onSubmit={onSubmit} className='flex flex-col justify-center items-center w-5/6 md:w-4/6 lg:w-3/6 mx-auto gap-y-3'>
+          <h1 className='font-semibold sm:text-xl mb-2'>Inicia sesión en X</h1>
           <label className="input input-bordered flex items-center w-full sm:w-4/5 gap-2 h-8 md:h-10">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +53,7 @@ export const LoginPage = () => {
             <MdOutlinePassword className="h-5 w-5 lg:h-7 lg:w-7 opacity-70"/>
             <input type="password" name='password' className="grow sm:text-md " autoComplete="current-password" placeholder="password" onChange={(e) => setFormData({...formdata, [e.target.name]:e.target.value})}/>
           </label>
-          <button className='w-full sm:w-4/5 btn btn-primary btn-circle text-white font-extrabold md:text-lg'>Iniciar sesión</button>
+          <button className='w-full sm:w-4/5 btn btn-primary btn-circle text-white font-extrabold md:text-lg mt-1'>Iniciar sesión</button>
           <p className='text-md md:text-lg'>¿No tienes una cuenta? <a href='/singup' className='text-primary'>Regístrate</a></p>
         </form>
       </div>

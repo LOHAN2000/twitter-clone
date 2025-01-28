@@ -8,6 +8,10 @@ export class AuthController {
     try {
       const {fullname, username, email, password} = req.body
 
+      if (!fullname || !username || !email || !password) {
+        return res.status(400).json({message: 'Please provide all fields'})
+      }
+
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
       if (!emailRegex.test(email)) {
@@ -75,6 +79,10 @@ export class AuthController {
   static async login (req, res) {
     try {
       const {username, password} = req.body 
+
+      if (!username || !password) {
+        return res.status(400).json({message: 'Please provide all fields'})
+      }
 
       const user = await User.findOne({username})
       const isPasswordCorrect = await bcrypt.compare(password, user?.password || '')

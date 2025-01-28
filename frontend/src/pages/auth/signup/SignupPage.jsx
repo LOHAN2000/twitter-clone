@@ -3,6 +3,8 @@ import { LuPencilLine } from 'react-icons/lu'
 import { MdOutlinePassword } from 'react-icons/md'
 import { XSvg } from '../../../components/svgs/Xsvg'
 import { Link } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 export const SignupPage = () => {
 
@@ -13,19 +15,58 @@ export const SignupPage = () => {
     password: ''
   })
 
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (formdata) => {
+      try {
+        const response = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formdata)
+        })
+
+        if (!response.ok) {
+          // Analiza el mensaje del servidor
+          const errorData = await response.json(); // Aquí obtienes el mensaje del backend
+          const errorMessage = errorData.message || "Error desconocido del servidor";
+          throw new Error(errorMessage);
+        }
+        
+        const data = response.json()
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        return data
+
+      } catch (error) {
+        toast.error(error.message)
+        throw error
+      }
+    },
+    onSuccess: () => {
+      toast.success("¡Cuenta creada exitosamente!");
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    }
+  })
+
   const onSubmit = (e) => {
     e.preventDefault()
-    console.log(formdata)
+    mutate(formdata)
   }
 
   return (
     <div className='flex h-screen w-full mx-auto justify-center sm:items-center items-start pt-10 sm:pt-0'>
-      <div className='grid grid-cols-1 w-3/4 sm:h-3/4 2xl:grid-cols-2 sm:grid-cols-[20%_80%] transition-all ease-in-out gap-x-36 2xl:gap-x-2 gap-y-3'>
+      <div className='grid grid-cols-1 w-4/5 sm:h-4/5 2xl:grid-cols-2 sm:grid-cols-[20%_80%] transition-all ease-in-out gap-x-36 2xl:gap-x-2 gap-y-3'>
         <div className='flex justify-start items-center sm:justify-center'>
           <XSvg className='max-w-10 sm:max-w-lg transition h-3/4 fill-white'/>
         </div>
         <div className='flex flex-col gap-y-7 sm:gap-y-16 2xl:gap-y-16'>
-          <h1 className='text-2xl sm:text-4xl md:text-5xl lg:text-6xl  text-start font-black w-2/3 2xl:w-2/3'>Lo que está pasando ahora</h1>
+          <h1 className='text-2xl sm:text-4xl md:text-5xl lg:text-6xl  text-start font-black w-2/3 2xl:w-3/4'>Lo que está pasando ahora</h1>
           <form onSubmit={onSubmit} className='flex flex-col gap-y-3 sm:gap-y-6 w-full items-start mx-auto '>
             <h1 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-sans font-black 2xl:w-2/3'>Únete hoy</h1>
             <label className="input input-bordered flex items-center w-full sm:w-4/5 gap-2 h-12 md:h-16">
@@ -59,7 +100,7 @@ export const SignupPage = () => {
               <MdOutlinePassword className="h-5 w-5 lg:h-7 lg:w-7 opacity-70"/>
               <input type="password" name='password' className="grow sm:text-xl" autoComplete="current-password" placeholder="Password" onChange={(e) => setFormData({...formdata, [e.target.name]:e.target.value})}/>
             </label>
-            <button className='w-full sm:w-4/5 btn btn-primary btn-circle text-white font-extrabold md:text-lg'>Crear cuenta</button>
+            <button className='w-full sm:w-4/5 btn btn-primary btn-circle text-white font-extrabold md:text-lg'>{isPending ? 'Cargando...' : 'Crear cuenta'}</button>
           </form>
           <div className='flex flex-col gap-y-2'>
             <h1 className='text-xl sm:text-2xl md:text-3xl lg:text-xl font-sans font-extralight 2xl:w-2/3'>¿Ya tienes una cuenta?</h1>
