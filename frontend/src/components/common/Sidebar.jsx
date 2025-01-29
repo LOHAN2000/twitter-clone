@@ -5,11 +5,47 @@ import { GoHome, GoHomeFill } from 'react-icons/go'
 import { FaRegUser, FaUser  } from "react-icons/fa6";
 import { HiOutlineBell, HiMiniBell  } from "react-icons/hi2";
 import { IoExitOutline } from "react-icons/io5";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 
 export const Sidebar = () => {
 
   const [pageView, setPageView] = useState('home')
+
+  const queryClient = useQueryClient()
+
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: async () => {
+      try {
+        const response = await fetch('/api/auth/logout', {
+          method: 'POST'
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          const errorMessage = errorData.message || 'Error interno del servidor'
+          throw new Error(errorMessage)
+        }
+
+        const data = await response.json()
+
+        if (data.error) {
+          throw new Error(data.error)
+        }
+
+        return data
+
+      } catch (error) {
+        toast.error(error.message)
+        throw error
+      }
+    },
+    onSuccess: (data) => {
+      toast.success(data.message)
+      queryClient.clear({ queryClient: ['authUser']})
+    }
+  })
 
   return (
     <div className='flex-[2_2_0] border-e border-[rgb(47,51,54)]'>
@@ -49,7 +85,7 @@ export const Sidebar = () => {
               <h1 className='text-sm md:text-base text-gray-600'>UserName</h1>
             </div>
           </div>
-          <IoExitOutline className='w-2/4 h-2/4'/>
+          <IoExitOutline onClick={() => mutate()} className='w-2/4 h-2/4'/>
         </div>
       </div>
     </div>

@@ -115,7 +115,7 @@ export class AuthController {
       res.cookie('jwt', '', {maxAge: 0})
       res.status(200).json({message: 'Logged out successfully'})
     } catch (error) {
-      console.log('Error in functino logout')
+      console.log('Error in function logout')
       res.status(500).json({Error: 'Internal server error'})
     }
   }

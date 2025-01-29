@@ -13,22 +13,45 @@ export const LoginPage = () => {
 
   const queryClient = useQueryClient()
 
-  const { mutation, isPending } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: async (formdata) => {
       try {
         const response = await fetch('/api/auth/login', {
           method: 'POST',
-          con
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formdata)
         })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          const errorMessage = errorData.message || 'Error interno del servidor'
+          throw new Error(errorMessage)
+        }
+
+        const data = await response.json()
+
+        if (data.error) {
+          throw new Error(data.error)
+        }
+
+        return data
+
       } catch (error) {
-        toast.error()
+        toast.error(error.message)
+        throw error
       }
+    },
+    onSuccess: () => {
+      toast.success(`Bienvenido ${formdata.username}`)
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
     }
   })
 
   const onSubmit = (e) => {
     e.preventDefault()
-    console.log(formdata)
+    mutate(formdata)
   }
 
   return(
@@ -53,7 +76,7 @@ export const LoginPage = () => {
             <MdOutlinePassword className="h-5 w-5 lg:h-7 lg:w-7 opacity-70"/>
             <input type="password" name='password' className="grow sm:text-md " autoComplete="current-password" placeholder="password" onChange={(e) => setFormData({...formdata, [e.target.name]:e.target.value})}/>
           </label>
-          <button className='w-full sm:w-4/5 btn btn-primary btn-circle text-white font-extrabold md:text-lg mt-1'>Iniciar sesión</button>
+          <button className='w-full sm:w-4/5 btn btn-primary btn-circle text-white font-extrabold md:text-lg mt-1'>{isPending ? 'Cargando' : 'Iniciar sesión'}</button>
           <p className='text-md md:text-lg'>¿No tienes una cuenta? <a href='/singup' className='text-primary'>Regístrate</a></p>
         </form>
       </div>

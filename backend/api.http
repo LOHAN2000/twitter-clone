@@ -14,8 +14,8 @@ POST http://localhost:8888/api/auth/login
 Content-Type: application/json
 
 {
-    "username": "Elveal",
-    "password": "hola11"
+    "username": "LOHAN",
+    "password": "hola123"
 }
 ###
 
@@ -33,7 +33,7 @@ POST http://localhost:8888/api/auth/logout
 
 ###
 
-POST http://localhost:8888/api/auth/getMe
+GET http://localhost:8888/api/auth/getMe
 
 ### User Endpoints ###
 

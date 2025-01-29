@@ -1,4 +1,4 @@
-import { Link, Route, Routes, useLocation } from "react-router-dom"
+import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom"
 import { Home } from "./pages/home/Home.jsx"
 import { SignupPage } from "./pages/auth/signup/SignupPage.jsx"
 import { LoginPage } from "./pages/auth/login/LoginPage.jsx"
@@ -10,6 +10,8 @@ import { ProfilePage } from "./pages/profile/ProfilePage.jsx"
 import { GoHomeFill } from "react-icons/go"
 import { MdOutlineEmail } from "react-icons/md"
 import { FaRegCircleUser } from "react-icons/fa6"
+import { useQuery } from "@tanstack/react-query"
+import { LoadSpinner } from "./components/common/LoadSpinner.jsx"
 
 function App() {
 
@@ -32,15 +34,43 @@ function App() {
   
     },[])
 
+  const { data: authUser, isLoading } = useQuery({
+    queryKey: ['authUser'],
+    queryFn: async () => {
+      try {
+        const response = await fetch('/api/auth/getMe')
+        if (!response.ok) {
+          throw new Error
+        }
+        const data = await response.json()
+        console.log('hola')
+        console.log(data)
+        return data
+
+      } catch (error) {
+        throw new Error(error)
+      }
+    },
+    retry: false
+  })
+
+  if (isLoading) {
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <LoadSpinner size="lg"/>
+      </div>
+    )
+  }
+
   return (
     <div className=" max-w-[85rem] flex mx-auto">
       {!(location.pathname === '/login' || location.pathname === '/singup') && !isMobile && <Sidebar />}
         <Routes>
-          <Route path='/' element={<Home/>}/>
-          <Route path='/login' element={<LoginPage/>}/>
-          <Route path='/singup' element={<SignupPage/>}/>
-          <Route path='/notifications' element={<NotificationPage/>}/>
-          <Route path='/profile' element={<ProfilePage/>}/>
+          <Route path='/' element={authUser ? <Home/> : <Navigate to='/login'/>}/>
+          <Route path='/login' element={!authUser ? <LoginPage/> : <Navigate to='/'/>}/>
+          <Route path='/singup' element={!authUser ? <SignupPage/> : <Navigate to='/'/>}/>
+          <Route path='/notifications' element={authUser ? <NotificationPage/> : <Navigate to='login'/>}/>
+          <Route path='/profile' element={authUser ? <ProfilePage/> : <Navigate to='/login'/>}/>
         </Routes>
       {!(location.pathname === '/login' || location.pathname === '/singup') && !isMobile && <RightPanel />}
       {isMobile && !(location.pathname === '/login' || location.pathname === '/singup') && (

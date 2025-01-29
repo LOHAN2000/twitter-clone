@@ -35,7 +35,7 @@ export const SignupPage = () => {
           throw new Error(errorMessage);
         }
         
-        const data = response.json()
+        const data = await response.json()
         
         if (data.error) {
           throw new Error(data.error);
