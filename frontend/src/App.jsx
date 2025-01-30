@@ -39,12 +39,15 @@ function App() {
     queryFn: async () => {
       try {
         const response = await fetch('/api/auth/getMe')
+
+        if (response.status === 401) {
+          return null
+        }
         if (!response.ok) {
-          throw new Error
+          throw new Error('Error del servidor')
         }
         const data = await response.json()
-        console.log('hola')
-        console.log(data)
+        
         return data
 
       } catch (error) {
@@ -74,7 +77,7 @@ function App() {
         </Routes>
       {!(location.pathname === '/login' || location.pathname === '/singup') && !isMobile && <RightPanel />}
       {isMobile && !(location.pathname === '/login' || location.pathname === '/singup') && (
-        <div className="btm-nav">
+        <div className="btm-nav ">
           <Link to={'/'} className={`${location.pathname === '/' ? 'active' : ''}`}>
             <button className="">
               <GoHomeFill className='h-8 w-8'/>

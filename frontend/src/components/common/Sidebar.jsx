@@ -43,7 +43,7 @@ export const Sidebar = () => {
     },
     onSuccess: (data) => {
       toast.success(data.message)
-      queryClient.clear({ queryClient: ['authUser']})
+      queryClient.invalidateQueries({ queryClient: ['authUser']})
     }
   })
 
