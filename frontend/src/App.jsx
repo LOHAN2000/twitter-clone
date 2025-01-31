@@ -67,7 +67,7 @@ function App() {
 
   return (
     <div className=" max-w-[85rem] flex mx-auto">
-      {!(location.pathname === '/login' || location.pathname === '/singup') && !isMobile && <Sidebar />}
+      {!(location.pathname === '/login' || location.pathname === '/singup') && !isMobile && authUser && <Sidebar />}
         <Routes>
           <Route path='/' element={authUser ? <Home/> : <Navigate to='/login'/>}/>
           <Route path='/login' element={!authUser ? <LoginPage/> : <Navigate to='/'/>}/>
@@ -75,7 +75,7 @@ function App() {
           <Route path='/notifications' element={authUser ? <NotificationPage/> : <Navigate to='login'/>}/>
           <Route path='/profile' element={authUser ? <ProfilePage/> : <Navigate to='/login'/>}/>
         </Routes>
-      {!(location.pathname === '/login' || location.pathname === '/singup') && !isMobile && <RightPanel />}
+      {!(location.pathname === '/login' || location.pathname === '/singup') && !isMobile && authUser &&  <RightPanel />}
       {isMobile && !(location.pathname === '/login' || location.pathname === '/singup') && (
         <div className="btm-nav ">
           <Link to={'/'} className={`${location.pathname === '/' ? 'active' : ''}`}>

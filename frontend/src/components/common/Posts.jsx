@@ -25,17 +25,13 @@ export const Posts = ({ type, authUser }) => {
     queryFn: async () => {
       try {
         const response = await fetch(ENDPOINT_POST)
-        if (!response.ok) {
+        if (response.status >= 500) {
           const errorData = await response.json()
           const errorMessage = errorData.message || 'Error interno del servidor'
           throw new Error(errorMessage) 
         }
 
         const data = await response.json()
-
-        if (data.Error) {
-          throw new Error(data.Error)
-        }
 
         return data
 

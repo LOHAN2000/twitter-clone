@@ -14,8 +14,6 @@ export const Sidebar = () => {
   const { data:authUser } = useQuery({queryKey: ['authUser']})
   const [pageView, setPageView] = useState('home')
   const { mutate: logout, isPending } = useLogout()
-
-  console.log(authUser)
   
 
   return (

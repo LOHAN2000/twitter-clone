@@ -28,7 +28,7 @@ export const useLogout = () => {
         return data 
 
       } catch (error) {
-        toast.error(error)
+        toast.error(error.message)
         throw error
       }
     },

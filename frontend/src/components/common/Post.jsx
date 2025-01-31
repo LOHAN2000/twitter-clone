@@ -1,12 +1,51 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SlOptions } from "react-icons/sl";
 import { LuRepeat2 } from "react-icons/lu";
 import { Comment } from './Comment';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { LoadSpinner } from './LoadSpinner';
 
 
 export const Post = ({ post }) => {
 
   const { text, img, user, createtAt, comments, likes} = post
+  const [isOwner, setIsOwner] = useState(false);
+
+  const { data:authUser, isLoading } = useQuery({ queryKey: ['authUser']})
+  const queryClient = useQueryClient()
+
+  const { mutate: deletePost, isPending } = useMutation({
+    mutationFn: async () => {
+      try {
+        const response = await fetch(`/api/post/${post._id}`, {
+          method: 'DELETE'
+        }) 
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          const errorMessage = errorData.message || 'Error interno del servidor'
+          throw new Error(errorMessage)
+        }
+
+        const data = response.json()
+
+        if (data.Error) {
+          throw new Error(data.error)
+        }
+
+        return data
+
+      } catch (error) {
+        toast.error(error.message)
+        throw new Error(error)
+      }
+    },
+    onSuccess: (data) => {
+      toast.success(data.message)
+      queryClient.invalidateQueries({ queryKey: ['posts']})
+    }
+  })
 
   const [response, setResponse] = useState({
     response: ''
@@ -17,7 +56,10 @@ export const Post = ({ post }) => {
     console.log(response)
   }
 
-  const samePerson = false
+  useEffect(() => {
+    setIsOwner(authUser.User._id === user._id)
+  }, [])
+
 
   return (
     <div className="flex flex-row px-4 py-3.5 gap-x-3.5 w-full border-b border-[rgb(47,51,54)]">
@@ -34,7 +76,7 @@ export const Post = ({ post }) => {
           <div className='dropdown dropdown-end'>
             <SlOptions tabIndex={0} role='button' className='text-[rgb(47,51,54)]'/>
             <ul tabIndex={0} className='dropdown-content menu bg-base-100 rounded-lg z-[1] w-44 sm:w-36 md:w-52 p-2 shadow'>
-              <li onClick={() => document.getElementById('modal_delete').showModal()} className='text-md font-semibold text-red-600'><a>Eliminar</a></li>
+              <li onClick={() => document.getElementById(`modal_delete_${post._id}`).showModal()} className='text-md font-semibold text-red-600'><a>Eliminar</a></li>
             </ul>
           </div>
         </div>
@@ -86,12 +128,12 @@ export const Post = ({ post }) => {
           <button className=''>close</button>
         </form>
       </dialog>
-      <dialog id="modal_delete" className='modal'>
+      <dialog id={`modal_delete_${post._id}`} className='modal'>
         <div className='modal-box px-6 py-5 flex flex-col rounded-xl max-w-72 sm:max-w-64  md:max-w-80'>
           <div className='flex flex-col justify-center gap-y-2'>
             <h1 className='text-center font-extrabold text-xl'>¿Deseas eliminar post?</h1>
             <p className='font-extralight text-md text-gray-500'>Esta acción no se pude revertir, y se eliminará de tu perfil, de la cronología de las cuentas que te sigan y de los resultados de búsqueda.</p>
-            <button className={`my-1 btn btn-error rounded-full text-white ${samePerson ? '' : 'btn-disabled'}`}>{samePerson ? 'Eliminar' : 'No hay permisos'}</button>
+            <button onClick={() => deletePost()} className={`my-1 btn btn-error rounded-full text-white ${isOwner ? '' : 'btn-disabled'}`}>{isPending ? <LoadSpinner size={'sm'}/> : (isOwner ? 'Eliminar' : 'No hay permisos')}</button>
             <form method="dialog" className='flex flex-row'> 
               <button className='btn btn-secondary rounded-full text-white w-full'>Cancelar</button>
             </form>

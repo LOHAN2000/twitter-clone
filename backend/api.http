@@ -66,8 +66,8 @@ POST http://localhost:8888/api/post/create
 Content-Type: application/json
 
 {
-    "text": "Hola me llamo Anjhelo",
-    "img": "https://static.bandainamcoent.eu/high/dark-souls/dark-souls-3/00-page-setup/ds3_game-thumbnail.jpg"
+    "text": "Hola, me gusta el Red dead Redemption 2",
+    "img": "https://media.npr.org/assets/img/2018/12/31/rdr2_screenshot-014_wide-71d02434782cc887366ba9767260080bb73fa207.jpg?s=1100&c=85&f=jpeg"
 }
 
 ###
