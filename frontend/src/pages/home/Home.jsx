@@ -4,7 +4,7 @@ import { Posts } from '../../components/common/Posts.jsx';
 import { useLocation } from 'react-router-dom';
 import { XSvg } from '../../components/svgs/Xsvg.jsx';
 import { IoExitOutline } from 'react-icons/io5';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useLogout } from '../../hooks/useLogout.js';
 
 export const Home = () => {
@@ -12,7 +12,9 @@ export const Home = () => {
   const [isMobile, setIsMobile] = useState(false)
   const [activeView, setActiveView] = useState('home')
   const [homeSection, setHomeSection] = useState('forYou')
+  const [typePost, setTypePost] = useState('')
   const location = useLocation()
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 
   const { mutate: logout, isPending } = useLogout()
 
@@ -38,11 +40,11 @@ export const Home = () => {
         <>
           <div className='flex flex-col items-start '>
             <div role="tablist" className="tabs tabs-bordered w-[99.8%] mx-auto grid grid-cols-2 h-10 sticky top-0 bg-black">
-              <a onClick={() => setHomeSection('forYou')} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Para tí</a>
-              <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
+              <a onClick={() => {setHomeSection('forYou'); setTypePost('forYou');}} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Para tí</a>
+              <a onClick={() => {setHomeSection('following'); setTypePost('following')}} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
             </div>
             <CreatePost/>
-            <Posts/>
+            <Posts type={typePost} authUser={authUser}/>
           </div>
         </>
       )}
@@ -57,12 +59,12 @@ export const Home = () => {
               <IoExitOutline onClick={() => logout()} className='absolute right-3 w-6 h-6 text-gray-400'/>
             </div>
             <div role="tablist" className="tabs tabs-bordered w-full grid grid-cols-2 h-[5%] ">
-              <a onClick={() => setHomeSection('forYou')} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Para tí</a>
-              <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
+              <a onClick={() => {setHomeSection('forYou'); setTypePost('forYou');}} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Para tí</a>
+              <a onClick={() => {setHomeSection('following'); setTypePost('following')}} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
             </div>
           </div>
             <CreatePost/>
-            <Posts/>
+            <Posts type={typePost}/>
         </div>
       )}
     </div>

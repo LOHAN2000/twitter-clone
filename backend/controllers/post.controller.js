@@ -50,8 +50,8 @@ export class PostController {
       if (posts === 0) {
         return res.status(200).json([])
       }
-
-      res.status(200).json({posts})
+      
+      res.status(200).json(posts)
 
     } catch (error) {
       console.log('Error in function getPosts', error)

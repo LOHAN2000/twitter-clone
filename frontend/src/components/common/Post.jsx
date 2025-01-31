@@ -4,7 +4,9 @@ import { LuRepeat2 } from "react-icons/lu";
 import { Comment } from './Comment';
 
 
-export const Post = () => {
+export const Post = ({ post }) => {
+
+  const { text, img, user, createtAt, comments, likes} = post
 
   const [response, setResponse] = useState({
     response: ''
@@ -20,14 +22,13 @@ export const Post = () => {
   return (
     <div className="flex flex-row px-4 py-3.5 gap-x-3.5 w-full border-b border-[rgb(47,51,54)]">
       <img
-        src="/Twitter_default_profile_400x400.png"
-        className="object-container w-[40px] h-[40px]  sm:w-[6%] sm:h-[6%] rounded-full"
+        src={user.profileImg ||"/Twitter_default_profile_400x400.png"} className="object-container w-[40px] h-[40px]  sm:w-[6%] sm:h-[6%] rounded-full"
       />
       <div className="flex flex-col w-full ">
         <div className='flex flex-row justify-between items-center'>
           <div className='flex flex-row gap-2 '>
-            <h1 className='text-sm md:text-md font-semibold max-w-40 sm:max-w-28 md:max-w-44 lg:max-w-[18rem] xl:max-w-[24rem] truncate'> fdaslñkfjdkjfdasl kfjdasfdalskjfdasl kfjdas</h1>
-            <h1 className='text-sm md:text-md font-extralight text-[rgb(47,51,54)] max-w-24 sm:max-w-24 md:max-w-28 lg:max-w-24 xl:max-w-36 truncate'>@UsernameUsername Username</h1>
+            <h1 className='text-sm md:text-md font-semibold max-w-40 sm:max-w-28 md:max-w-44 lg:max-w-[18rem] xl:max-w-[24rem] truncate'>{user.username}</h1>
+            <h1 className='text-sm md:text-md font-extralight text-[rgb(47,51,54)] max-w-24 sm:max-w-24 md:max-w-28 lg:max-w-24 xl:max-w-36 truncate'>@{user.fullname}</h1>
             <h1 className='text-md font-extralight text-[rgb(47,51,54)] truncate'>Date</h1>
           </div>
           <div className='dropdown dropdown-end'>
@@ -37,15 +38,15 @@ export const Post = () => {
             </ul>
           </div>
         </div>
-        <h1></h1>
+        <h1>{text}</h1>
         <div className='mt-2'>
-          <img src='https://images.unsplash.com/photo-1737142928495-ca54258b1e81?q=80&w=2159&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' className='object-contain rounded-2xl'/>
+          <img src={img} className='object-contain rounded-2xl'/>
         </div>
         <div className='mt-2 w-3/4 px-2'>
           <div className='flex flex-row justify-between items-center'>
-            <button onClick={() => document.getElementById('my_modal_1').showModal()} className='flex flex-row text-[rgb(47,51,54)] item-center gap-x-1.5'><i className="fa-regular fa-comment pt-0.5"></i><h1 className='text-sm'>21</h1></button>
+            <button onClick={() => document.getElementById('my_modal_1').showModal()} className='flex flex-row text-[rgb(47,51,54)] item-center gap-x-1.5'><i className="fa-regular fa-comment pt-0.5"></i><h1 className='text-sm'>{comments.length}</h1></button>
             <LuRepeat2 className='text-[rgb(47,51,54)] w-5 h-5'/>
-            <a className='flex flex-row text-[rgb(47,51,54)] items-center gap-x-1.5'><i className="fa-regular fa-heart"></i><h1 className='text-sm'>5</h1></a>
+            <a className='flex flex-row text-[rgb(47,51,54)] items-center gap-x-1.5'><i className="fa-regular fa-heart"></i><h1 className='text-sm'>{likes.length}</h1></a>
           </div>
         </div>
       </div>

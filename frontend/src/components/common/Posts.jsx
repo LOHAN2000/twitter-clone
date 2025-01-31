@@ -1,14 +1,59 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { PostSkeleton } from '../skeletons/PostSkeleton'
 import { Post } from './Post'
+import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { Prueba } from './Prueba'
 
-export const Posts = () => {
+export const Posts = ({ type, authUser }) => {
 
-  const isLoading = false
+  const getPostEndpoint = () => {
+    switch (type) {
+      case 'forYou':
+        return '/api/post/all'
+      case 'following':
+        return `/api/post/following/${authUser.User._id}`
+      default:
+        return '/api/post/all'
+    }
+  }
+
+  const ENDPOINT_POST = getPostEndpoint()
+
+  const { data: posts, isPending, refetch, isRefetching } = useQuery({
+    queryKey: ['posts'],
+    queryFn: async () => {
+      try {
+        const response = await fetch(ENDPOINT_POST)
+        if (!response.ok) {
+          const errorData = await response.json()
+          const errorMessage = errorData.message || 'Error interno del servidor'
+          throw new Error(errorMessage) 
+        }
+
+        const data = await response.json()
+
+        if (data.Error) {
+          throw new Error(data.Error)
+        }
+
+        return data
+
+      } catch (error) {
+        toast.error(error.message)
+        throw new Error(error)
+      }
+
+    }
+  })
+
+  useEffect(() => {
+    refetch() 
+  }, [type, refetch])
 
   return (
     <>
-      {isLoading && (
+      {isRefetching &&(
         <div className='flex flex-col w-full'>
           <PostSkeleton/>
           <PostSkeleton/>
@@ -17,12 +62,14 @@ export const Posts = () => {
           <PostSkeleton/>
         </div>
       )}
-      {!isLoading && (
-        <>
-          <Post/>
-          <Post/>
-          <Post/>
-        </>
+      {(!isPending && posts.length > 0) ? (
+        posts.map((post) => (
+          <Post post={post} key={post._id}/>
+        ))
+      ) : (
+        <div className='flex justify-center w-full mt-2'>
+          <h1 className='text-gray-500'>No se encontraron posts 🙁</h1>
+        </div>
       )}
     </>
   )
