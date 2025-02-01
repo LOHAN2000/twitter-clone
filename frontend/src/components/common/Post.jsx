@@ -69,8 +69,8 @@ export const Post = ({ post }) => {
       <div className="flex flex-col w-full ">
         <div className='flex flex-row justify-between items-center'>
           <div className='flex flex-row gap-2 '>
-            <h1 className='text-sm md:text-md font-semibold max-w-40 sm:max-w-28 md:max-w-44 lg:max-w-[18rem] xl:max-w-[24rem] truncate'>{user.username}</h1>
-            <h1 className='text-sm md:text-md font-extralight text-[rgb(47,51,54)] max-w-24 sm:max-w-24 md:max-w-28 lg:max-w-24 xl:max-w-36 truncate'>@{user.fullname}</h1>
+            <h1 className='text-sm md:text-md font-semibold max-w-40 sm:max-w-28 md:max-w-44 lg:max-w-[18rem] xl:max-w-[24rem] truncate capitalize'>{user.fullname}</h1>
+            <h1 className='text-sm md:text-md font-extralight text-[rgb(47,51,54)] max-w-24 sm:max-w-24 md:max-w-28 lg:max-w-24 xl:max-w-36 truncate'>@{user.username}</h1>
             <h1 className='text-md font-extralight text-[rgb(47,51,54)] truncate'>Date</h1>
           </div>
           <div className='dropdown dropdown-end'>

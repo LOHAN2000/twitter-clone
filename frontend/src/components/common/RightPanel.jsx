@@ -6,10 +6,8 @@ import { RightPanelUser } from './RightPanelUser'
 
 export const RightPanel = () => {
 
-  const isLoading = false
-
   const { data: suggestedUsers, isPending } = useQuery({
-    queryKey: ['users'],
+    queryKey: ['suggestedUsers'],
     queryFn: async () => {
       try {
         const response = await fetch('/api/user/suggested', {
@@ -49,7 +47,7 @@ export const RightPanel = () => {
               <RightPanelSkeleton/>
             </div>
           )}
-          {!isLoading && (
+          {!isPending && (
             suggestedUsers?.data.map((user) => (
               <RightPanelUser key={user._id} user={user}/>
             )

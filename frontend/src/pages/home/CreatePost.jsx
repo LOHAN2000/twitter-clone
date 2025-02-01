@@ -18,7 +18,6 @@ export const CreatePost = () => {
 
   const { mutate: sendForm, isPending } = useMutation({
     mutationFn: async ({text, img}) => {
-      console.log({text, img})
       try {
         const response = await fetch(`/api/post/create`, {
           method: 'POST',

@@ -8,7 +8,7 @@ import { FaRegEdit } from "react-icons/fa";
 
 export const ProfilePage = () => {
   
-  const isMyProfile = false
+  const isMyProfile = true
   const [homeSection, setHomeSection] = useState('forYou')
   const [imgProfile, setImageProfile] = useState('')
   const [bannerProfile, setBannerProfile] = useState('')
@@ -95,8 +95,8 @@ export const ProfilePage = () => {
           </div>
         </div>
         <div role="tablist" className="tabs tabs-bordered mb-2 grid w-[99.8%] mx-auto grid-cols-2 h-12 sticky top-0 bg-black">
-          <a onClick={() => setHomeSection('forYou')} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Para tí</a>
-          <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Siguiendo </a>
+          <a onClick={() => setHomeSection('forYou')} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Posts</a>
+          <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Likes</a>
         </div>
         <Posts/>
       </div>
