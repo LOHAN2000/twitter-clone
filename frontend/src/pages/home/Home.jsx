@@ -64,7 +64,7 @@ export const Home = () => {
             </div>
           </div>
             <CreatePost/>
-            <Posts type={typePost}/>
+            <Posts type={typePost} authUser={authUser}/>
         </div>
       )}
     </div>

@@ -3,7 +3,6 @@ import { PostSkeleton } from '../skeletons/PostSkeleton'
 import { Post } from './Post'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { Prueba } from './Prueba'
 
 export const Posts = ({ type, authUser }) => {
 
