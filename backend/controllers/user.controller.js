@@ -90,7 +90,7 @@ export class UserController {
 
       suggestedUsers.forEach(user => user.password=null)
 
-      res.status(200).json({data: suggestedUsers})
+      res.status(200).json({data:suggestedUsers})
 
     } catch (error) {
       console.log('Error in function getSuggestedUsers:', error.message)  

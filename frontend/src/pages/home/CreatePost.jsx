@@ -12,7 +12,8 @@ export const CreatePost = () => {
   const [formData, setFormData] = useState({
     text: ''
   })
-  const [img, setImg] = useState('')
+  const [img, setImg] = useState(null)
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const imgRef = useRef(null)
 
   const { mutate: sendForm, isPending } = useMutation({
@@ -47,6 +48,8 @@ export const CreatePost = () => {
     },
     onSuccess: (data) => {
       toast.success(data.message)
+      setFormData({text: ''})
+      setImg('')
       queryClient.invalidateQueries({ queryKey: ['posts']})
     }
   })
@@ -71,7 +74,7 @@ export const CreatePost = () => {
       <img src={authUser.User.coverImg ||'/Twitter_default_profile_400x400.png'} className='object-container w-[40px] h-[40px]  sm:w-[6%] sm:h-[6%] rounded-full'/>
       <div className='w-full flex flex-col items-center justify-center'>
         <form onSubmit={handleForm} className="flex w-full flex-col gap-y-3 overflow-hidden">
-          <textarea onChange={(e) => setFormData({...formData, [e.target.name]:e.target.value})} name="text" type="text" placeholder="¡¿Qué está pasando ahora?!" className="max-w-[338px] lg:max-w-[500px] py-2 max-h-40 resize-none overflow-y-auto border-none focus:outline-none bg-inherit text-md"/> 
+          <textarea onChange={(e) => setFormData({...formData, [e.target.name]:e.target.value})} name="text"  value={formData.text} type="text" placeholder="¡¿Qué está pasando ahora?!" className="max-w-[338px] lg:max-w-[500px] py-2 max-h-40 resize-none overflow-y-auto border-none focus:outline-none bg-inherit text-md"/> 
           {/* imagen */}
           {img && (
             <div className='flex flex-col relative'>
@@ -82,10 +85,10 @@ export const CreatePost = () => {
           <div className='flex flex-row justify-between w-full items-center border-t border-[rgb(47,51,54)] py-3'>
             <div className='flex flex-row h-full gap-x-2'>
               <CiImageOn onClick={() => imgRef.current.click()} style={{color: 'rgb(29, 155, 240)'}} className='h-[1.4rem] w-[1.4rem]' />
-              <MdEmojiEmotions style={{color: 'rgb(29, 155, 240)'}} className='h-[1.4rem] w-[1.4rem]'/>
+              <MdEmojiEmotions onClick={() => setShowEmojiPicker(!showEmojiPicker)} style={{color: 'rgb(29, 155, 240)'}} className='h-[1.4rem] w-[1.4rem]'/>
               <input type='file' hidden ref={imgRef} onChange={handleImageRef}/>
             </div>
-            <button className={`bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold ${formData?.text.length === 0 ? 'btn btn-disabled' : ''} py-0 sm:py-1 sm:px-3`}>{isPending ? 'Cargando...' : 'Postear'}</button>
+            <button className={`bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold ${!formData.text.length && !img ? 'btn btn-disabled' : ''} py-0 sm:py-1 sm:px-3`}>{isPending ? 'Cargando...' : 'Postear'}</button>
           </div>
         </form>
       </div>
