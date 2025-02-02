@@ -39,23 +39,37 @@ export class PostController {
 
   static async getPosts (req, res) {
     try {
-      const posts = await Post.find().sort({createdAt: -1}).populate({
-        path: 'user',
-        select: '-password'
-      }).populate({
-        path:'comments.user',
-        select: '-password'
-      })
-
-      if (posts === 0) {
-        return res.status(200).json([])
+      const posts = await Post.find()
+        .sort({ createdAt: -1 })
+        .populate({
+          path: 'user',
+          select: '-password'
+        })
+        .populate({
+          path: 'comments.user',
+          select: '-password'
+        })
+        .lean(); // Convertir a objetos planos
+    
+      if (posts.length === 0) {
+        return res.status(200).json([]);
       }
-      
-      res.status(200).json(posts)
-
+    
+      // Ordenar comentarios en cada publicación
+      const postsWithSortedComments = posts.map(post => {
+        if (post.comments && post.comments.length > 0) {
+          post.comments.sort((a, b) => {
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          });
+        }
+        return post;
+      });
+    
+      res.status(200).json(postsWithSortedComments);
+    
     } catch (error) {
-      console.log('Error in function getPosts', error)
-      res.status(500).json({message: 'Internal server error'})
+      console.log('Error in function getPosts', error);
+      res.status(500).json({ message: 'Internal server error' });
     }
   }
 
