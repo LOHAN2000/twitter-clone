@@ -15,7 +15,13 @@ export const Post = ({ post }) => {
   const { data:authUser, isLoading } = useQuery({ queryKey: ['authUser']})
   const queryClient = useQueryClient()
 
-  const { mutate: deletePost, isPending } = useMutation({
+  const [response, setResponse] = useState({
+    response: ''
+  })
+
+  const isLiked = post.likes.includes(authUser.User._id)
+
+  const { mutate: deletePost, isPending: isPendingDelete } = useMutation({
     mutationFn: async () => {
       try {
         const response = await fetch(`/api/post/${post._id}`, {
@@ -47,9 +53,37 @@ export const Post = ({ post }) => {
     }
   })
 
-  const [response, setResponse] = useState({
-    response: ''
+  const { mutate: like, isPending: isPendingLike } = useMutation({
+    mutationFn: async (postId) => {
+      try {
+        const response = await fetch(`/api/post/like/${postId}`, {
+          method: 'POST'
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          const errorMessage = errorData.message
+          throw new Error(errorMessage)
+        }
+
+        const data = await response.json()
+
+        if (data.Error) {
+          throw new Error(data.Error)
+        }
+
+        return data
+
+      } catch (error) {
+        toast.error(error.message)
+      }
+    },
+    onSuccess: (data) => {
+      toast.success(data.message)
+      queryClient.invalidateQueries({ queryKey: ['posts']})
+    }
   })
+
 
   const onSubmit = (e) => {
     e.preventDefault()
@@ -86,14 +120,14 @@ export const Post = ({ post }) => {
         </div>
         <div className='mt-2 w-3/4 px-2'>
           <div className='flex flex-row justify-between items-center'>
-            <button onClick={() => document.getElementById('my_modal_1').showModal()} className='flex flex-row text-[rgb(47,51,54)] item-center gap-x-1.5'><i className="fa-regular fa-comment pt-0.5"></i><h1 className='text-sm'>{comments.length}</h1></button>
+            <button onClick={() => document.getElementById(`modal_comment_${post._id}`).showModal()} className='flex flex-row text-[rgb(47,51,54)] item-center gap-x-1.5'><i className="fa-regular fa-comment pt-0.5"></i><h1 className='text-sm'>{comments.length}</h1></button>
             <LuRepeat2 className='text-[rgb(47,51,54)] w-5 h-5'/>
-            <a className='flex flex-row text-[rgb(47,51,54)] items-center gap-x-1.5'><i className="fa-regular fa-heart"></i><h1 className='text-sm'>{likes.length}</h1></a>
+            <a onClick={() => like(post._id)} className={`flex flex-row ${isLiked ? 'text-red-500' : 'text-[rgb(47,51,54)]'} items-center gap-x-1.5 cursor-pointer`}><i className={`${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart`}></i><h1 className='text-sm'>{likes.length}</h1></a>
           </div>
         </div>
       </div>
       {/* MODAL */}
-      <dialog id="my_modal_1" className="modal">
+      <dialog id={`modal_comment_${post._id}`} className="modal">
         <div className="modal-box p-4 pt-12 flex flex-col rounded-xl max-w-md  md:max-w-screen-sm">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute left-1 top-1">✕</button>
@@ -133,7 +167,7 @@ export const Post = ({ post }) => {
           <div className='flex flex-col justify-center gap-y-2'>
             <h1 className='text-center font-extrabold text-xl'>¿Deseas eliminar post?</h1>
             <p className='font-extralight text-md text-gray-500'>Esta acción no se pude revertir, y se eliminará de tu perfil, de la cronología de las cuentas que te sigan y de los resultados de búsqueda.</p>
-            <button onClick={() => deletePost()} className={`my-1 btn btn-error rounded-full text-white ${isOwner ? '' : 'btn-disabled'}`}>{isPending ? <LoadSpinner size={'sm'}/> : (isOwner ? 'Eliminar' : 'No hay permisos')}</button>
+            <button onClick={() => deletePost()} className={`my-1 btn btn-error rounded-full text-white ${isOwner ? '' : 'btn-disabled'}`}>{isPendingDelete ? <LoadSpinner size={'sm'}/> : (isOwner ? 'Eliminar' : 'No hay permisos')}</button>
             <form method="dialog" className='flex flex-row'> 
               <button className='btn btn-secondary rounded-full text-white w-full'>Cancelar</button>
             </form>

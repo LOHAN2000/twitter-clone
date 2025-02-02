@@ -241,10 +241,12 @@ export class PostController {
       const isLiked = post.likes.includes(userId)
 
       if (isLiked) {
+        // dislike post
         await Post.findByIdAndUpdate(postId, {$pull: {likes: userId}})
         await User.findByIdAndUpdate(userId, {$pull: {likedPosts: postId}})
         return res.status(200).json({message: 'Post unliked successfully'})
       } else {
+        // like post
         await Post.findByIdAndUpdate(postId, {$push: {likes: userId}})
         await User.findByIdAndUpdate(userId, {$push: {likedPosts: postId}})
 

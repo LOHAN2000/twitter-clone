@@ -48,7 +48,7 @@ export const Posts = ({ type, authUser }) => {
 
   return (
     <>
-      {isRefetching &&(
+      {isRefetching || isPending &&(
         <div className='flex flex-col w-full'>
           <PostSkeleton/>
           <PostSkeleton/>
@@ -57,7 +57,7 @@ export const Posts = ({ type, authUser }) => {
           <PostSkeleton/>
         </div>
       )}
-      {(!isPending && posts.length > 0) ? (
+      {(!isPending && posts?.length > 0) ? (
         posts.map((post) => (
           <Post post={post} key={post._id}/>
         ))

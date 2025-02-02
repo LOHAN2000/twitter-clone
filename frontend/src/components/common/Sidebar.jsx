@@ -54,7 +54,7 @@ export const Sidebar = () => {
               <h1 className='text-sm md:text-base text-gray-600'>{authUser.User.fullname}</h1>
             </div>
           </div>
-          <IoExitOutline onClick={() => logout()} className='w-2/4 h-2/4'/>
+          <IoExitOutline onClick={() => logout()} className='w-2/4 h-2/4 cursor-pointer'/>
         </div>
       </div>
     </div>
