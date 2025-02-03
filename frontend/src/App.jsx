@@ -72,7 +72,7 @@ function App() {
           <Route path='/' element={authUser ? <Home/> : <Navigate to='/login'/>}/>
           <Route path='/login' element={!authUser ? <LoginPage/> : <Navigate to='/'/>}/>
           <Route path='/singup' element={!authUser ? <SignupPage/> : <Navigate to='/'/>}/>
-          <Route path='/notifications' element={authUser ? <NotificationPage/> : <Navigate to='login'/>}/>
+          <Route path='/notifications' element={authUser ? <NotificationPage/> : <Navigate to='/login'/>}/>
           <Route path='/profile' element={authUser ? <ProfilePage/> : <Navigate to='/login'/>}/>
         </Routes>
       {!(location.pathname === '/login' || location.pathname === '/singup') && !isMobile && authUser &&  <RightPanel />}

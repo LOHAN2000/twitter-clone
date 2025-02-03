@@ -4,14 +4,14 @@ export class NotificationController {
     try {
       const userId = req.user._id
 
-      const nofications = await Notification.find({to: userId}).populate({
+      const notifications = await Notification.find({to: userId}).populate({
         path: 'from',
         select: 'username profileImg'
       })
 
       await Notification.updateMany({to: userId}, {read: true});
 
-      res.status(200).json({nofications})
+      res.status(200).json({notifications})
     } catch (error) {
       console.log('Error in getNotifications function')
     }

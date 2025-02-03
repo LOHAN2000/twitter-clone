@@ -26,10 +26,10 @@ export const RightPanel = () => {
           throw new Error(data.Error)
         }
 
-        return data
+        return data.data
 
       } catch (error) {
-        toast.error(error.message)
+        throw new Error(error)
       }
     }
   })
@@ -48,7 +48,7 @@ export const RightPanel = () => {
             </div>
           )}
           {!isPending && (
-            suggestedUsers?.data.map((user) => (
+            suggestedUsers?.map((user) => (
               <RightPanelUser key={user._id} user={user}/>
             )
           ))}

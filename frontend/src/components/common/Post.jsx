@@ -10,7 +10,6 @@ import { formatPostDate } from '../../utils/date';
 
 export const Post = ({ post }) => {
 
-  console.log(post)
   const { text, img, user, createdAt, comments, likes} = post
   const [isOwner, setIsOwner] = useState(false);
 
@@ -21,7 +20,6 @@ export const Post = ({ post }) => {
     text: ''
   })
 
-  console.log(createdAt)
   const date = formatPostDate(createdAt)
 
   const isLiked = post.likes.includes(authUser.User._id)
