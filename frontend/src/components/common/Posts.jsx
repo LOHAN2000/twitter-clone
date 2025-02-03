@@ -4,14 +4,18 @@ import { Post } from './Post'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-export const Posts = ({ type, authUser }) => {
-
+export const Posts = ({ type, authUser, user }) => {
+  
   const getPostEndpoint = () => {
     switch (type) {
       case 'forYou':
         return '/api/post/all'
       case 'following':
         return `/api/post/following/${authUser.User._id}`
+      case 'posts':
+        return `/api/post/user/${user.username}`
+      case 'liked':
+        return `/api/post/likes/${user._id}`
       default:
         return '/api/post/all'
     }
@@ -38,7 +42,6 @@ export const Posts = ({ type, authUser }) => {
         toast.error(error.message)
         throw new Error(error)
       }
-
     }
   })
 
@@ -48,7 +51,7 @@ export const Posts = ({ type, authUser }) => {
 
   return (
     <>
-      {isRefetching || isPending &&(
+      {(isRefetching || isPending) &&(
         <div className='flex flex-col w-full'>
           <PostSkeleton/>
           <PostSkeleton/>

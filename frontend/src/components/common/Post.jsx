@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { LoadSpinner } from './LoadSpinner';
 import { formatPostDate } from '../../utils/date';
+import { Link } from 'react-router-dom';
 
 
 export const Post = ({ post }) => {
@@ -136,13 +137,20 @@ export const Post = ({ post }) => {
 
   return (
     <div className="flex flex-row px-4 py-3.5 gap-x-3.5 w-full border-b border-[rgb(47,51,54)]">
-      <img
-        src={user.profileImg ||"/Twitter_default_profile_400x400.png"} className="object-container w-[40px] h-[40px]  sm:w-[6%] sm:h-[6%] rounded-full"
-      />
+      <Link to={`/profile/${user.username}`} className="flex items-top">
+        <div className="w-[40px] h-[40px]"> 
+          <img 
+            src={user.profileImg || "/Twitter_default_profile_400x400.png"} 
+            className="w-full h-full object-cover rounded-full"
+          />
+        </div>
+      </Link>
       <div className="flex flex-col w-full ">
         <div className='flex flex-row justify-between items-center'>
           <div className='flex flex-row gap-2 items-center'>
-            <h1 className='text-sm md:text-md font-semibold max-w-40 sm:max-w-28 md:max-w-44 lg:max-w-[18rem] xl:max-w-[24rem] truncate capitalize'>{user.fullname}</h1>
+            <Link to={`/profile/${user.username}`}>
+              <h1 className='text-sm md:text-md font-semibold max-w-40 sm:max-w-28 md:max-w-44 lg:max-w-[18rem] xl:max-w-[24rem] truncate capitalize'>{user.fullname}</h1>
+            </Link>
             <h1 className='text-sm md:text-md font-extralight text-[rgb(47,51,54)] max-w-24 sm:max-w-24 md:max-w-28 lg:max-w-24 xl:max-w-36 truncate'>@{user.username}</h1>
             <h1 className='text-md font-extralight text-[rgb(47,51,54)] truncate'>{date}</h1>
           </div>
@@ -173,10 +181,15 @@ export const Post = ({ post }) => {
           </form>
           <div className='flex flex-col gap-y-4'>
             <div className='flex flex-row gap-x-3'>
-              <img src="/Twitter_default_profile_400x400.png" className="object-container w-[40px] h-[40px]  sm:w-[7%] sm:h-[7%] rounded-full"/>
+              <Link className='w-[40px] h-[40px] sm:w-[7%] sm:h-[7%]' to={`/profile/${user.username}`}>
+                <img src="/Twitter_default_profile_400x400.png" className="object-contain rounded-full"/>
+              </Link>
               <div className='flex flex-col w-full'>
                 <div className='flex flex-row items-center gap-x-2'>
+                  {/* TODO: Corregir el renderizado de la imagen de perfil en el modal de comentarios */}
+                  <Link to={`/profile/${user.username}`}>
                     <h1 className='text-sm md:text-md font-semibold max-w-60 sm:max-w-52 lg:max-w-[12rem] xl:max-w-[14rem] truncate capitalize'>{user.fullname}</h1>
+                  </Link>
                     <h1 className='text-sm md:text-md font-extralight text-[rgb(47,51,54)] max-w-24 sm:max-w-24 md:max-w-28 lg:max-w-24 xl:max-w-36 truncate'>@{user.username}</h1>
                     <h1 className='text-sm font-extralight text-[rgb(47,51,54)] truncate'>{date}</h1>
                 </div>
@@ -184,7 +197,9 @@ export const Post = ({ post }) => {
               </div>
             </div>
             <div className='flex flew-row gap-x-3 w-full'>
-              <img src='/Twitter_default_profile_400x400.png' className='object-container w-[40px] h-[40px]  sm:w-[7%] sm:h-[7%] rounded-full'/>
+              <Link className='w-[40px] h-[40px] sm:w-[7%] sm:h-[7%]' to={`/profile/${user.username}`}>
+                <img src='/Twitter_default_profile_400x400.png' className='object-contain rounded-full'/>
+              </Link>
               <form onSubmit={onSubmit} className='flex overflow-x-hidden w-full'>
                 <textarea onChange={(e) => setResponse({...response, [e.target.name]: e.target.value})} name="text" type="text"  value={response.text} placeholder="Postea tu respuesta ahora" className="py-2 max-h-48 w-full h-20 resize-none overflow-y-auto border-none focus:outline-none bg-inherit text-md"/> 
               </form>

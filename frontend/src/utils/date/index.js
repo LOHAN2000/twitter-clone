@@ -19,3 +19,10 @@ export const formatPostDate = (date) => {
     return 'Justo ahora'
   }
 }
+
+export const formatMemberSinceDate = (createdAt) => {
+  const date = new Date(createdAt);
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+  return `Se unió ${month} ${year}`;
+}

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useFollow } from '../../hooks/useFollow'
 import { LoadSpinner } from './LoadSpinner'
+import { Link } from 'react-router-dom'
 
 export const RightPanelUser = ({user}) => {
 
@@ -9,9 +10,13 @@ export const RightPanelUser = ({user}) => {
   return (
     <div className='flex flex-col lg:flex-row hover:bg-[rgb(231,233,234,0.1)] items-start md:items-center px-3 py-2'>
       <div className='flex flex-row items-center gap-x-2'>
-        <img src={user.profileImg ||'/Twitter_default_profile_400x400.png'} className='object-container w-3/5 h-3/5 lg:w-1/5 lg:h-1/5 rounded-full'/>
+        <Link className='w-1/5 h-4/5 lg:w-1/5 lg:h-1/5' to={`/profile/${user.username}`}>
+          <img src={user.profileImg ||'/Twitter_default_profile_400x400.png'} className='object-contain rounded-full'/>
+        </Link>
         <div className='flex flex-col'>
-          <h1 className='text-sm md:text-base'>{user.fullname}</h1>
+          <Link to={`/profile/${user.username}`}>
+            <h1 className='text-sm md:text-base'>{user.fullname}</h1>
+          </Link>
           <h1 className='text-sm md:text-base text-gray-600'>{user.username}</h1>
         </div>
       </div>

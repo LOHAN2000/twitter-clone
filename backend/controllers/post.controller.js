@@ -29,7 +29,7 @@ export class PostController {
 
       await newPost.save()
 
-      res.status(200).json({message: 'Post created', post: newPost})
+      res.status(200).json({message: 'Post At', post: newPost})
       
     } catch (error) {
       console.log('Error in function createPost', error)
@@ -59,7 +59,7 @@ export class PostController {
       const postsWithSortedComments = posts.map(post => {
         if (post.comments && post.comments.length > 0) {
           post.comments.sort((a, b) => {
-            return new Date(b.createdAt) - new Date(a.createdAt);
+            return new Date(b.AtAt) - new Date(a.AtAt);
           });
         }
         return post;
@@ -87,7 +87,7 @@ export class PostController {
         return res.status(404).json({message: 'User not found'})
       }
 
-      const likedPosts = await Post.find({likes: userId}).populate({
+      const likedPosts = await Post.find({likes: userId}).sort({ createdAt: -1 }).populate({
         path: 'user',
         select: '-password'
       }).populate({
@@ -99,7 +99,7 @@ export class PostController {
         return res.status(404).json({message: 'Not liked posts found'})
       }
 
-      res.status(200).json({likedPosts})
+      res.status(200).json(likedPosts)
       
     } catch (error) {
       console.log('Error in function getLikedPosts', error)
@@ -128,15 +128,12 @@ export class PostController {
         return res.status(200).json({message: 'No following users'})
       }
 
-      const followingPosts = await Post.find({user: {$in: following}}).sort({created: -1}).populate({
-        path: 'user',
-        select: '-password'
-      }).populate({
-        path: 'comments.user',
-        select: '-password'
-      })
+      const followingPosts = await Post.find({ user: { $in: following } })
+      .sort({ createdAt: -1 })
+      .populate({ path: 'user', select: '-password' })
+      .populate({ path: 'comments.user', select: '-password' })
 
-      res.status(200).json({followingPosts})
+      res.status(200).json(followingPosts)
 
     } catch (error) {
       console.log('Error in function getFollowingPosts', error)
@@ -158,7 +155,7 @@ export class PostController {
       if (!user) {
         return res.status(404).json({message: 'User not found'})
       }
-      const posts = await Post.find({user: user._id}).sort({created: -1}).populate({
+      const posts = await Post.find({user: user._id}).sort({createdAt: -1}).populate({
         path: 'user',
         select: '-password'
       }).populate({
@@ -166,7 +163,7 @@ export class PostController {
         select: '-password'
       })
 
-      res.status(200).json({posts})
+      res.status(200).json(posts)
 
     } catch (error) {
       console.log('Error in function getPostsbyUser', error)

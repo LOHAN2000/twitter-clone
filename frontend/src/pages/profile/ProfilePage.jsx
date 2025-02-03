@@ -1,15 +1,20 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { IoArrowBack } from "react-icons/io5";
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { FaLink } from "react-icons/fa6";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { Posts } from '../../components/common/Posts';
 import { FaRegEdit } from "react-icons/fa";
+import { useQuery } from '@tanstack/react-query';
+import { LoadSpinner } from '../../components/common/LoadSpinner';
+import { ProfileSkeleton } from '../../components/skeletons/ProfileSkeleton';
+import { formatMemberSinceDate } from '../../utils/date';
 
 export const ProfilePage = () => {
   
-  const isMyProfile = true
-  const [homeSection, setHomeSection] = useState('forYou')
+  const { username } = useParams()
+  const { data:authUser } = useQuery({ queryKey: ['authUser']})
+  const [homeSection, setHomeSection] = useState('posts')
   const [imgProfile, setImageProfile] = useState('')
   const [bannerProfile, setBannerProfile] = useState('')
   const [dataForm, setDataForm] = useState({
@@ -37,6 +42,41 @@ export const ProfilePage = () => {
     }
   }
 
+  const { data: user, isPending: isPendingUser, refetch, isRefetching } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: async () => {
+      try {
+        const response = await fetch(`/api/user/profile/${username}`)
+        
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.message)
+        }
+
+        const data = await response.json()
+
+        if (data.Error) {
+          throw new Error(data.Error)
+        }
+
+        return data.User
+
+      } catch (error) {
+        throw new Error(error)
+      }
+    }
+  })
+
+  const date = formatMemberSinceDate(user?.createdAt)
+
+  useEffect(() => {
+    refetch()
+    setBannerProfile('')
+    setImageProfile('')
+  }, [username, refetch])
+
+  const isMyProfile = user?._id === authUser.User._id
+
   const onSubmit = (e) => {
     e.preventDefault()
     console.log(dataForm)
@@ -49,57 +89,67 @@ export const ProfilePage = () => {
           <IoArrowBack style={{fill: 'white'}} className='w-6 h-6 sm:w-4 sm:h-4 md:w-6 md:h-6'/>
         </Link>
         <div className='flex flex-col'>
-          <p className='font-bold text-lg'>Username</p>
+          <p className='font-bold text-lg'>{user?.username}</p>
           <span className='text-[rgb(47,51,54)] font-extralight'>511 posts</span>
         </div>
       </div>
-      <div className='flex flex-col '>
-        <div className='relative group/imgBanner'>
-          <img src={bannerProfile || './BannerPlaceholder.png'} className='object-cover object-center w-full h-52 sm:h-48 md:h-56'/>
-          <input type='file' hidden ref={bannerProfRef} onChange={(e) => {handleImageCHange(e, 'bannerProfile')}}/>
-          {isMyProfile && (
-            <FaRegEdit onClick={() => bannerProfRef.current.click()} className='absolute top-1 right-1 w-11 h-11 group-hover/imgBanner:opacity-100 opacity-0 bg-gray-400/50 p-2 rounded-xl cursor-pointer'/>
-          )}
-          <div className='relative group/imgProfile '>
-            <img src={imgProfile || './Twitter_default_profile_400x400.png'} className='absolute w-32 h-32 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full object-cover object-center border-4 border-black -bottom-16 ms-4'/>
-            <input type='file' hidden ref={imgProfRef} onChange={(e) => {handleImageCHange(e, 'imgProfile')}}/>
+      <div className='flex flex-col'>
+        {(isPendingUser || isRefetching) ? (
+          <ProfileSkeleton/>
+        ): (
+          <>
+          <div className='relative group/imgBanner'>
+            <img src={bannerProfile || user.coverImg || '../BannerPlaceholder.png'} className='object-cover object-center w-full h-52 sm:h-48 md:h-56'/>
+            <input type='file' hidden ref={bannerProfRef} onChange={(e) => {handleImageCHange(e, 'bannerProfile')}}/>
             {isMyProfile && (
-              <FaRegEdit onClick={() => imgProfRef.current.click()} className='absolute -top-[60px] left-[20px] sm:-top-[43.1px] sm:left-[22px] md:-top-[75.1px] md:left-[21.5px] h-[120px] w-[120px] sm:h-[101px] sm:w-[101px] md:w-[133px] md:h-[133px] bg-gray-300/50 fill-slate-100 p-8 sm:p-6 md:p-10 rounded-full group-hover/imgProfile:opacity-100 opacity-0 cursor-pointer'/>
+              <FaRegEdit onClick={() => bannerProfRef.current.click()} className='absolute top-1 right-1 w-11 h-11 group-hover/imgBanner:opacity-100 opacity-0 bg-gray-400/50 p-2 rounded-xl cursor-pointer'/>
             )}
+            <div className='relative group/imgProfile '>
+              <img src={imgProfile || '../Twitter_default_profile_400x400.png'} className='absolute w-32 h-32 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full object-cover object-center border-4 border-black -bottom-16 ms-4'/>
+              <input type='file' hidden ref={imgProfRef} onChange={(e) => {handleImageCHange(e, 'imgProfile')}}/>
+              {isMyProfile && (
+                <FaRegEdit onClick={() => imgProfRef.current.click()} className='absolute -top-[60px] left-[20px] sm:-top-[43.1px] sm:left-[22px] md:-top-[75.1px] md:left-[21.5px] h-[120px] w-[120px] sm:h-[101px] sm:w-[101px] md:w-[133px] md:h-[133px] bg-gray-300/50 fill-slate-100 p-8 sm:p-6 md:p-10 rounded-full group-hover/imgProfile:opacity-100 opacity-0 cursor-pointer'/>
+              )}
+            </div>
           </div>
-        </div>
-        {isMyProfile ? (
-          <div className='flex justify-end items-center m-3 gap-x-2'>
-            <button onClick={() => document.getElementById('modal_edit').showModal()} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-3'>Editar perfil</button>
-            {(imgProfile || bannerProfile) && (
-              <button className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>Confirmar</button>
-            )}
+          {isMyProfile ? (
+            <div className='flex justify-end items-center m-3 gap-x-2'>
+              <button onClick={() => document.getElementById('modal_edit').showModal()} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-3'>Editar perfil</button>
+              {(imgProfile || bannerProfile) && (
+                <button className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>Confirmar</button>
+              )}
+            </div>
+          ) : (
+            <div className='flex justify-end items-center m-3'>
+              <button className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>Seguir</button>
+            </div>
+          )}
+          <div className='flex flex-col m-4 mt-5 gap-y-1 overflow-hidden'>
+            <h1 className='font-extrabold text-md md:text-xl'>{user?.username}</h1>
+            <h1 className='text-[rgb(47,51,54)] text-sm sm:text-xs md:text-base'>@{user?.fullname}</h1>
+            {user?.bio && (<p className='mt-2 text-sm md:text-base'>{user?.bio}</p>)}
+            <div className='flex flex-row gap-x-1 items-center mt-1'>
+              {user.link?.length > 0 && (
+                <>
+                  <FaLink className='text-[rgb(47,51,54)]'/> 
+                  <a className='flex items-center gap-x-1 underline text-sm sm:text-xs md:text-base text-blue-500 cursor-pointer max-w-md truncate'>{user.link}</a>
+                </>)}
+              <h1 className={`text-[rgb(47,51,54)] ${user.link ? 'ms-4' : 'ms-0'} flex items-center gap-x-1`}><FaRegCalendarAlt/>{date}</h1>
+            </div>
+            <div className='flex row mt-2 gap-x-2 text-sm sm:text-xs md:text-base'>
+              <h1>{user.following.length} <span className='text-[rgb(47,51,56)]'>Siguiendo</span></h1>
+              <h1>{user.followers.length} <span className='text-[rgb(47,51,56)]'>Seguidores</span></h1>
+            </div>
           </div>
-        ) : (
-          <div className='flex justify-end items-center m-3'>
-            <button className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>Seguir</button>
+          <div role="tablist" className="tabs tabs-bordered mb-2 grid w-[99.8%] mx-auto grid-cols-2 h-12 sticky top-0 bg-black">
+            <a onClick={() => setHomeSection('posts')} role="tab" className={`tab ${homeSection === 'posts' ? 'tab-active' : ''} `}>Posts</a>
+            <a onClick={() => setHomeSection('liked')} role="tab" className={`tab ${homeSection === 'liked' ? 'tab-active' : ''} `}>Me gusta</a>
           </div>
+          <Posts type={homeSection} user={user}/>
+          </>
         )}
-        <div className='flex flex-col m-4 mt-5 gap-y-1 overflow-hidden'>
-          <h1 className='font-extrabold text-md md:text-xl'>Nombre</h1>
-          <h1 className='text-[rgb(47,51,54)] text-sm sm:text-xs md:text-base'>@Username</h1>
-          <p className='mt-2 text-xs md:text-base'>lorem30</p>
-          <div className='flex flex-row gap-x-1 items-center mt-1'>
-            <FaLink className='text-[rgb(47,51,54)]'/> 
-            <a className='flex items-center gap-x-1 underline text-sm sm:text-xs md:text-base text-blue-500 cursor-pointer max-w-md truncate'>Link</a>
-            <h1 className='text-[rgb(47,51,54)] ms-4 flex items-center gap-x-1'><FaRegCalendarAlt/>Date</h1>
-          </div>
-          <div className='flex row mt-2 gap-x-2 text-sm sm:text-xs md:text-base'>
-            <h1>2 <span className='text-[rgb(47,51,56)]'>Following</span></h1>
-            <h1>3 <span className='text-[rgb(47,51,56)]'>Followers</span></h1>
-          </div>
-        </div>
-        <div role="tablist" className="tabs tabs-bordered mb-2 grid w-[99.8%] mx-auto grid-cols-2 h-12 sticky top-0 bg-black">
-          <a onClick={() => setHomeSection('forYou')} role="tab" className={`tab ${homeSection === 'forYou' ? 'tab-active' : ''} `}>Posts</a>
-          <a onClick={() => setHomeSection('following')} role="tab" className={`tab ${homeSection === 'following' ? 'tab-active' : ''} `}>Likes</a>
-        </div>
-        <Posts/>
       </div>
+      {/* MODAL_EDIT */}
       <dialog id="modal_edit" className='modal'>
         <div className='modal-box p-4 pt-4 flex flex-col rounded-xl max-w-md  md:max-w-screen-xs'>
           <form method="dialog">

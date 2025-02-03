@@ -37,7 +37,7 @@ export const Sidebar = () => {
                   <h1 className='font-bold text-sm md:text-lg'>Notificaciones</h1>
                 </li>
               </Link>
-              <Link to='/profile'>
+              <Link to={`/profile/${authUser.User.username}`}>
                 <li onClick={() => setPageView('profile')} className='flex flex-row justify-start items-center gap-x-3 hover:bg-[rgb(231,233,234,0.1)] px-2.5 py-2.5 rounded-full '>
                   {pageView === 'profile' ? <FaUser className='h-[12%] w-[12%]'/> : <FaRegUser className='h-[12%] w-[12%]'/>}
                   <h1 className='font-bold text-sm md:text-lg'>Perfil</h1>
@@ -48,9 +48,13 @@ export const Sidebar = () => {
         </div>
         <div className='flex flex-row items-center rounded-full hover:bg-[rgb(231,233,234,0.1)] gap-x-3 justify-between px-2 py-1'>
           <div className='flex flex-row items-center gap-x-3'>
-            <img src={authUser.User.coverImg || '/Twitter_default_profile_400x400.png'} className='object-container w-1/5 h-1/5 rounded-full'/>
+            <Link className='w-[25%] h-[25%]' to={`/profile/${authUser.User.username}`}>
+                <img src={authUser.User.coverImg || '/Twitter_default_profile_400x400.png'} className='object-contain rounded-full'/>
+            </Link>
             <div className='flex flex-col w-full '>
-              <h1 className='text-sm md:text-md'>{authUser.User.username}</h1>
+              <Link to={`/profile/${authUser.User.username}`}>
+                <h1 className='text-sm md:text-md'>{authUser.User.username}</h1>
+              </Link>
               <h1 className='text-sm md:text-base text-gray-600'>{authUser.User.fullname}</h1>
             </div>
           </div>

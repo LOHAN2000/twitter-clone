@@ -73,7 +73,7 @@ function App() {
           <Route path='/login' element={!authUser ? <LoginPage/> : <Navigate to='/'/>}/>
           <Route path='/singup' element={!authUser ? <SignupPage/> : <Navigate to='/'/>}/>
           <Route path='/notifications' element={authUser ? <NotificationPage/> : <Navigate to='/login'/>}/>
-          <Route path='/profile' element={authUser ? <ProfilePage/> : <Navigate to='/login'/>}/>
+          <Route path='/profile/:username' element={authUser ? <ProfilePage/> : <Navigate to='/login'/>}/>
         </Routes>
       {!(location.pathname === '/login' || location.pathname === '/singup') && !isMobile && authUser &&  <RightPanel />}
       {isMobile && !(location.pathname === '/login' || location.pathname === '/singup') && (
@@ -88,7 +88,7 @@ function App() {
               <MdOutlineEmail className='h-8 w-8'/>
             </button>
           </Link>
-          <Link to={'/profile'} className={`${location.pathname === '/profile' ? 'active' : ''}`}>
+          <Link to={`/profile/${authUser.User.username}`} className={`${location.pathname === '/profile' ? 'active' : ''}`}>
             <button>
               <FaRegCircleUser className='h-8 w-8'/>
             </button>
