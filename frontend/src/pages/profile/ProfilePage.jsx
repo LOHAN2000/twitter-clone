@@ -5,20 +5,23 @@ import { FaLink } from "react-icons/fa6";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { Posts } from '../../components/common/Posts';
 import { FaRegEdit } from "react-icons/fa";
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { LoadSpinner } from '../../components/common/LoadSpinner';
 import { ProfileSkeleton } from '../../components/skeletons/ProfileSkeleton';
 import { formatMemberSinceDate } from '../../utils/date';
+import { useFollow } from '../../hooks/useFollow';
 
 export const ProfilePage = () => {
   
   const { username } = useParams()
   const { data:authUser } = useQuery({ queryKey: ['authUser']})
   const [homeSection, setHomeSection] = useState('posts')
-  const [imgProfile, setImageProfile] = useState('')
-  const [bannerProfile, setBannerProfile] = useState('')
+  const [profileImg, setImageProfile] = useState('')
+  const [coverImg, setBannerProfile] = useState('')
+  const imgProfRef = useRef(null)
+  const bannerProfRef = useRef(null)
   const [dataForm, setDataForm] = useState({
-    name: '',
+  name: '',
     username: '',
     bio: '',
     link: '',
@@ -27,16 +30,13 @@ export const ProfilePage = () => {
     newPassword: ''
   })
 
-  const imgProfRef = useRef(null)
-  const bannerProfRef = useRef(null)
-
   const handleImageCHange = (e, state) => {
     const file = e.target.files[0]
     if (file) {
       const reader = new FileReader()
       reader.onload = () => {
-        state === 'imgProfile' && setImageProfile(reader.result)
-        state === 'bannerProfile' && setBannerProfile(reader.result)
+        state === 'profileImg' && setImageProfile(reader.result)
+        state === 'coverImg' && setBannerProfile(reader.result)
       }
       reader.readAsDataURL(file)
     }
@@ -59,6 +59,7 @@ export const ProfilePage = () => {
           throw new Error(data.Error)
         }
 
+        console.log(data.User)
         return data.User
 
       } catch (error) {
@@ -66,6 +67,16 @@ export const ProfilePage = () => {
       }
     }
   })
+
+  const { mutate: update, isPending: isPendingUpdate } = useMutation({
+    mutationFn: async () => {
+      
+    }
+  })
+
+  const { mutate: follow, isPending } = useFollow()
+
+  const isFollowing = authUser.User?.following.includes(user?._id)
 
   const date = formatMemberSinceDate(user?.createdAt)
 
@@ -99,14 +110,14 @@ export const ProfilePage = () => {
         ): (
           <>
           <div className='relative group/imgBanner'>
-            <img src={bannerProfile || user.coverImg || '../BannerPlaceholder.png'} className='object-cover object-center w-full h-52 sm:h-48 md:h-56'/>
-            <input type='file' hidden ref={bannerProfRef} onChange={(e) => {handleImageCHange(e, 'bannerProfile')}}/>
+            <img src={coverImg || user.coverImg || '../BannerPlaceholder.png'} className='object-cover object-center w-full h-52 sm:h-48 md:h-56'/>
+            <input type='file' hidden ref={bannerProfRef} onChange={(e) => {handleImageCHange(e, 'coverImg')}}/>
             {isMyProfile && (
               <FaRegEdit onClick={() => bannerProfRef.current.click()} className='absolute top-1 right-1 w-11 h-11 group-hover/imgBanner:opacity-100 opacity-0 bg-gray-400/50 p-2 rounded-xl cursor-pointer'/>
             )}
             <div className='relative group/imgProfile '>
-              <img src={imgProfile || '../Twitter_default_profile_400x400.png'} className='absolute w-32 h-32 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full object-cover object-center border-4 border-black -bottom-16 ms-4'/>
-              <input type='file' hidden ref={imgProfRef} onChange={(e) => {handleImageCHange(e, 'imgProfile')}}/>
+              <img src={profileImg || '../Twitter_default_profile_400x400.png'} className='absolute w-32 h-32 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full object-cover object-center border-4 border-black -bottom-16 ms-4'/>
+              <input type='file' hidden ref={imgProfRef} onChange={(e) => {handleImageCHange(e, 'profileImg')}}/>
               {isMyProfile && (
                 <FaRegEdit onClick={() => imgProfRef.current.click()} className='absolute -top-[60px] left-[20px] sm:-top-[43.1px] sm:left-[22px] md:-top-[75.1px] md:left-[21.5px] h-[120px] w-[120px] sm:h-[101px] sm:w-[101px] md:w-[133px] md:h-[133px] bg-gray-300/50 fill-slate-100 p-8 sm:p-6 md:p-10 rounded-full group-hover/imgProfile:opacity-100 opacity-0 cursor-pointer'/>
               )}
@@ -114,14 +125,14 @@ export const ProfilePage = () => {
           </div>
           {isMyProfile ? (
             <div className='flex justify-end items-center m-3 gap-x-2'>
-              <button onClick={() => document.getElementById('modal_edit').showModal()} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-3'>Editar perfil</button>
-              {(imgProfile || bannerProfile) && (
+              <button onClick={() => document.getElementById(`modal_edit_${user._id}`).showModal()} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-3'>Editar perfil</button>
+              {(profileImg || coverImg) && (
                 <button className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>Confirmar</button>
               )}
             </div>
           ) : (
             <div className='flex justify-end items-center m-3'>
-              <button className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>Seguir</button>
+              <button onClick={() => follow(user._id)} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>{isPending ? <LoadSpinner/> : isFollowing ? 'Dejar de Seguir' : 'Seguir'}</button>
             </div>
           )}
           <div className='flex flex-col m-4 mt-5 gap-y-1 overflow-hidden'>
@@ -150,7 +161,7 @@ export const ProfilePage = () => {
         )}
       </div>
       {/* MODAL_EDIT */}
-      <dialog id="modal_edit" className='modal'>
+      <dialog id={`modal_edit_${user._id}`} className='modal'>
         <div className='modal-box p-4 pt-4 flex flex-col rounded-xl max-w-md  md:max-w-screen-xs'>
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute left-1 top-4">✕</button>
