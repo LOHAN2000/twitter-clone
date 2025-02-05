@@ -46,19 +46,21 @@ export const Sidebar = () => {
             </ul>
           </div>
         </div>
-        <div className='flex flex-row items-center rounded-full hover:bg-[rgb(231,233,234,0.1)] gap-x-3 justify-between px-2 py-1'>
+        <div className='flex flex-row items-center rounded-full hover:bg-[rgb(231,233,234,0.1)] gap-x-3 justify-between px-2 py-2'>
           <div className='flex flex-row items-center gap-x-3'>
-            <Link className='w-[25%] h-[25%]' to={`/profile/${authUser.User.username}`}>
-                <img src={authUser.User.coverImg || '/Twitter_default_profile_400x400.png'} className='object-contain rounded-full'/>
+            <Link to={`/profile/${authUser.User.username}`}>
+              <div className="sm:w-7 sm:h-7 md:w-9 md:h-9 aspect-square">
+                <img src={authUser.User.profileImg || '/Twitter_default_profile_400x400.png'} className="object-cover w-full h-full rounded-full" alt="Profile"/>
+              </div>
             </Link>
             <div className='flex flex-col w-full '>
               <Link to={`/profile/${authUser.User.username}`}>
                 <h1 className='text-sm md:text-md'>{authUser.User.username}</h1>
               </Link>
-              <h1 className='text-sm md:text-base text-gray-600'>{authUser.User.fullname}</h1>
+              <h1 className='sm:text-xs lg:text-base text-gray-600'>{authUser.User.fullname}</h1>
             </div>
           </div>
-          <IoExitOutline onClick={() => logout()} className='w-2/4 h-2/4 cursor-pointer'/>
+          <IoExitOutline onClick={() => logout()} className='md:w-[25px] md:h-[30px] cursor-pointer overflow-y-hidden'/>
         </div>
       </div>
     </div>

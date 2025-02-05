@@ -10,8 +10,10 @@ export const Comment = ({ comment }) => {
 
   return (
     <div className='flex flex-row gap-x-3'>
-      <Link className='w-[40px] h-[40px] sm:w-[7%] sm:h-[7%]' to={`/profile/${user.username}`}>
-        <img src={user.profileImg ||"/Twitter_default_profile_400x400.png"} className="object-contain  rounded-full"/>
+      <Link className='' to={`/profile/${user.username}`}>
+      <div className='w-8 h-8 sm:w-7 sm:h-7 md:w-10 md:h-10 aspect-square'>
+        <img src={user.profileImg ||"/Twitter_default_profile_400x400.png"} className="object-cover object-center rounded-full w-full h-full"/>
+      </div>
       </Link>
       <div className='flex flex-col w-full'>
         <div className='flex flex-row items-center gap-x-2'>

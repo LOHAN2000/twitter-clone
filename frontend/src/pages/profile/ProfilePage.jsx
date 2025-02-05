@@ -10,6 +10,7 @@ import { LoadSpinner } from '../../components/common/LoadSpinner';
 import { ProfileSkeleton } from '../../components/skeletons/ProfileSkeleton';
 import { formatMemberSinceDate } from '../../utils/date';
 import { useFollow } from '../../hooks/useFollow';
+import { useUpdate } from '../../hooks/useUpdate';
 
 export const ProfilePage = () => {
   
@@ -68,11 +69,9 @@ export const ProfilePage = () => {
     }
   })
 
-  const { mutate: update, isPending: isPendingUpdate } = useMutation({
-    mutationFn: async () => {
-      
-    }
-  })
+  const { mutate: update, isPending:isPendingUpdate } = useUpdate()
+
+
 
   const { mutate: follow, isPending } = useFollow()
 
@@ -116,7 +115,7 @@ export const ProfilePage = () => {
               <FaRegEdit onClick={() => bannerProfRef.current.click()} className='absolute top-1 right-1 w-11 h-11 group-hover/imgBanner:opacity-100 opacity-0 bg-gray-400/50 p-2 rounded-xl cursor-pointer'/>
             )}
             <div className='relative group/imgProfile '>
-              <img src={profileImg || '../Twitter_default_profile_400x400.png'} className='absolute w-32 h-32 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full object-cover object-center border-4 border-black -bottom-16 ms-4'/>
+              <img src={profileImg || user.profileImg || '../Twitter_default_profile_400x400.png'} className='absolute w-32 h-32 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full object-cover object-center border-4 border-black -bottom-16 ms-4'/>
               <input type='file' hidden ref={imgProfRef} onChange={(e) => {handleImageCHange(e, 'profileImg')}}/>
               {isMyProfile && (
                 <FaRegEdit onClick={() => imgProfRef.current.click()} className='absolute -top-[60px] left-[20px] sm:-top-[43.1px] sm:left-[22px] md:-top-[75.1px] md:left-[21.5px] h-[120px] w-[120px] sm:h-[101px] sm:w-[101px] md:w-[133px] md:h-[133px] bg-gray-300/50 fill-slate-100 p-8 sm:p-6 md:p-10 rounded-full group-hover/imgProfile:opacity-100 opacity-0 cursor-pointer'/>
@@ -127,7 +126,7 @@ export const ProfilePage = () => {
             <div className='flex justify-end items-center m-3 gap-x-2'>
               <button onClick={() => document.getElementById(`modal_edit_${user._id}`).showModal()} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-3'>Editar perfil</button>
               {(profileImg || coverImg) && (
-                <button className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>Confirmar</button>
+                <button onClick={() => update({profileImg, coverImg})} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>{isPendingUpdate ? <LoadSpinner/> : 'Confirmar'}</button>
               )}
             </div>
           ) : (
@@ -161,7 +160,7 @@ export const ProfilePage = () => {
         )}
       </div>
       {/* MODAL_EDIT */}
-      <dialog id={`modal_edit_${user._id}`} className='modal'>
+      <dialog id={`modal_edit_${user?._id}`} className='modal'>
         <div className='modal-box p-4 pt-4 flex flex-col rounded-xl max-w-md  md:max-w-screen-xs'>
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute left-1 top-4">✕</button>

@@ -4,6 +4,7 @@ import { MdEmojiEmotions } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 export const CreatePost = () => {
 
@@ -70,7 +71,11 @@ export const CreatePost = () => {
 
   return (
     <div className='flex flex-row w-full pt-7 sm:pt-6 px-4 gap-x-3 border-b border-[rgb(47,51,54)]'>
-      <img src={authUser.User.coverImg ||'/Twitter_default_profile_400x400.png'} className='object-container w-[40px] h-[40px]  sm:w-[6%] sm:h-[6%] rounded-full'/>
+      <Link to={authUser.User.username}>
+        <div className='w-10 h-10'>
+         <img src={authUser.User.profileImg ||'/Twitter_default_profile_400x400.png'} className='object-cover rounded-full w-full h-full'/>
+        </div>
+      </Link>
       <div className='w-full flex flex-col items-center justify-center'>
         <form onSubmit={handleForm} className="flex w-full flex-col gap-y-3 overflow-hidden">
           <textarea onChange={(e) => setFormData({...formData, [e.target.name]:e.target.value})} name="text"  value={formData.text} type="text" placeholder="¡¿Qué está pasando ahora?!" className="max-w-[338px] lg:max-w-[500px] py-2 max-h-40 resize-none overflow-y-auto border-none focus:outline-none bg-inherit text-md"/> 

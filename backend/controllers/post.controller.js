@@ -222,7 +222,7 @@ export class PostController {
       post.comments.push(comment)
       await post.save()
 
-      res.status(200).json({message: 'Comment added succesfully', data: post})
+      res.status(200).json({message: 'Comment added succesfully', data: post.comments})
 
     } catch (error) {
       console.log('Error in function commentPost', error);

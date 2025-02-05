@@ -109,7 +109,7 @@ export const Post = ({ post }) => {
         if (data.Error) {
           throw new Error(data.error)
         }
-
+        console.log(data)
         return data
 
       } catch (error) {
@@ -119,8 +119,20 @@ export const Post = ({ post }) => {
     },
     onSuccess: (data) => {
       toast.success(data.message)
-      queryClient.invalidateQueries({ queryKey: ['posts']})
+      console.log(data.data)
       setResponse({ text: ''})
+      queryClient.setQueryData(['posts'], (oldData) => {
+        if (!oldData) {
+          return []
+        }
+        return oldData.map((p) => {
+          if (p._id === post._id) {
+            console.log(p)
+            return {...p, comments: data.data}
+          }
+          return p
+        })
+      })
     }
   })
 
@@ -181,8 +193,10 @@ export const Post = ({ post }) => {
           </form>
           <div className='flex flex-col gap-y-4'>
             <div className='flex flex-row gap-x-3'>
-              <Link className='w-[40px] h-[40px] sm:w-[7%] sm:h-[7%]' to={`/profile/${user.username}`}>
-                <img src="/Twitter_default_profile_400x400.png" className="object-contain rounded-full"/>
+              <Link to={`/profile/${user.username}`}>
+                <div className='w-8 h-8 sm:w-7 sm:h-7 md:w-10 md:h-10 aspect-square'>
+                  <img src={post.user.profileImg || "/Twitter_default_profile_400x400.png"} className="object-cover rounded-full w-full h-full"/>
+                </div>
               </Link>
               <div className='flex flex-col w-full'>
                 <div className='flex flex-row items-center gap-x-2'>
@@ -197,8 +211,10 @@ export const Post = ({ post }) => {
               </div>
             </div>
             <div className='flex flew-row gap-x-3 w-full'>
-              <Link className='w-[40px] h-[40px] sm:w-[7%] sm:h-[7%]' to={`/profile/${user.username}`}>
-                <img src='/Twitter_default_profile_400x400.png' className='object-contain rounded-full'/>
+              <Link to={`/profile/${user.username}`}>
+                <div className='w-8 h-8 sm:w-7 sm:h-7 md:w-10 md:h-10 aspect-square'>
+                  <img src={authUser.User.profileImg ||'/Twitter_default_profile_400x400.png'} className='object-cover rounded-full w-full h-full'/>
+                </div>
               </Link>
               <form onSubmit={onSubmit} className='flex overflow-x-hidden w-full'>
                 <textarea onChange={(e) => setResponse({...response, [e.target.name]: e.target.value})} name="text" type="text"  value={response.text} placeholder="Postea tu respuesta ahora" className="py-2 max-h-48 w-full h-20 resize-none overflow-y-auto border-none focus:outline-none bg-inherit text-md"/> 

@@ -5,17 +5,16 @@ import { toast } from 'sonner'
 export const useUpdate = () => {
 
   const queryClient = useQueryClient()
-  const { data: authUser } = useQuery({ queryKey: ['authUser']})
 
   return useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (dataProfile) => {
       try {
-        const response = await fetch(`/api/user/update/${authUser.User._id}`, {
+        const response = await fetch(`/api/user/update`, {
           method: 'POST',
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(data)
+          body: JSON.stringify(dataProfile)
         })
         
         if (!response.ok) {
@@ -30,8 +29,10 @@ export const useUpdate = () => {
         }
 
         return data
+
       } catch (error) {
-        toast.error(error)
+        console.log(error)
+        toast.error(error.message)
       }
     },
     onSuccess: async (data) => {

@@ -99,34 +99,31 @@ export class UserController {
   }
 
   static async updateProfile (req, res) {
-    
-    let { profileImg, coverImg } = req.body;
-    const { fullname, email, username, currentPassword, newPassword, bio, link } = req.body;
-    const userId = req.user._id;
+    let { profileImg, coverImg } = req.body
+    const { fullname, username, email, name, bio, link, currentPassword, newPassword } = req.body
+
+    const userId = req.user._id
 
     try {
-      const user = await User.findById(userId);
-      
-      if (!user) {
-        return res.status(404).json({message: 'User not found'});
-      }
+      const user = await User.findById(userId)
 
-      if (!currentPassword && !newPassword) {
-        return res.status(400).json({ message: 'Both current password and new password are required' });
-      }
+      const isUsernameChanged = username && username !== user.username
+      const isFullnameChanged = fullname && fullname !== user.fullname  
 
-      if ((!newPassword && currentPassword) || (!currentPassword && newPassword)) {
-        return res.status(400).json({message: 'Please provide both current password and new password'});
+      if (isUsernameChanged || isFullnameChanged) {
+        if (!currentPassword || !newPassword) {
+          return res.status(400).json({message: 'Both current password and new password are required to update username or fullname'})
+        }
       }
 
       if (currentPassword && newPassword) {
-        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        const isMatch = await bcrypt.compare(currentPassword, user.password)
 
         if (!isMatch) {
           return res.status(400).json({message: 'Current password is incorrect'})
         }
 
-        if (newPassword.length < 6) {
+        if (newPassword < 6) {
           return res.status(400).json({message: 'Password must be at least 6 characters long'})
         }
 
@@ -134,73 +131,72 @@ export class UserController {
         user.password = await bcrypt.hash(newPassword, salt)
       }
 
-      if (username && username.length > 10 ) {
-        return res.status(400).json({message: 'Username must be less than 10 characters'})
+      if (username && username.length > 10) {
+        return res.status(400).json({ message: 'Username must be less than 10 characters' });
       }
-
-      const existingUser = await User.findOne({ username })
-
+  
+      const existingUser = await User.findOne({ username });
       if (existingUser) {
-        return res.status(400).json({message: 'Username is already taken'})
+        return res.status(400).json({ message: 'Username is already taken' });
       }
-
-      if (fullname && fullname.length > 30 ) {
-        return res.status(400).json({message: 'Full name must be less than 40 characters'})
+  
+      if (fullname && fullname.length > 30) {
+        return res.status(400).json({ message: 'Full name must be less than 40 characters' });
       }
-
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
+  
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (email && !emailRegex.test(email)) {
-        return res.status(400).json({message: 'Invalid email format'})
+        return res.status(400).json({ message: 'Invalid email format' });
       }
-
-      const existingEmail = await User.findOne({email})
-
+  
+      const existingEmail = await User.findOne({ email });
       if (existingEmail) {
-        return res.status(400).json({message: 'Email is already taken'})
+        return res.status(400).json({ message: 'Email is already taken' });
       }
-
+  
       if (bio && bio.length > 200) {
-        return res.status(400).json({message: 'Bio must be less than 200 characters'})
+        return res.status(400).json({ message: 'Bio must be less than 200 characters' });
       }
-
+  
       if (link && link.length > 20) {
-        return res.status(400).json({message: 'Link must be less than 20 characters'})
+        return res.status(400).json({ message: 'Link must be less than 20 characters' });
       }
-
+  
+      // Actualizar imágenes, si están presentes
       if (profileImg) {
         if (user.profileImg) {
-          await cloudinary.uploader.destroy(user.profileImg.split('/').pop().split('.')[0])
+          await cloudinary.uploader.destroy(user.profileImg.split('/').pop().split('.')[0]);
         }
-        const uploadedResponse = await cloudinary.uploader.upload(profileImg)
+        const uploadedResponse = await cloudinary.uploader.upload(profileImg);
         profileImg = uploadedResponse.secure_url;
       }
-
+  
       if (coverImg) {
-        if(user.coverImg) {
-          await cloudinary.uploader.destroy(user.coverImg.split('/').pop().split('.')[0])
+        if (user.coverImg) {
+          await cloudinary.uploader.destroy(user.coverImg.split('/').pop().split('.')[0]);
         }
-        const uploadedResponse = await cloudinary.uploader.upload(coverImg)
+        const uploadedResponse = await cloudinary.uploader.upload(coverImg);
         coverImg = uploadedResponse.secure_url;
       }
+  
+      // Actualizar otros campos
+      user.fullname = fullname || user.fullname;
+      user.username = username || user.username;
+      user.email = email || user.email;
+      user.bio = bio || user.bio;
+      user.link = link || user.link;
+      user.profileImg = profileImg || user.profileImg;
+      user.coverImg = coverImg || user.coverImg;
+  
+      await user.save();
+      user.password = null;
+      res.status(200).json({ message: 'Profile updated successfully', data: user });
 
-      user.fullname = fullname || user.fullname
-      user.username = username || user.username
-      user.email = email || user.email
-      user.name = username || user.username
-      user.bio = bio || user.bio
-      user.link = link || user.link
-      user.profileImg = profileImg || user.profileImg
-      user.coverImg = coverImg || user.coverImg
-
-      await user.save()
-
-      user.password = null
-      res.status(200).json({message: 'Profile updated successfully', data: user})
 
     } catch (error) {
-      console.log('Error in function updateProfile:', error)  
-      res.status(500).json({Error: 'Internal server error.'})      
+      console.log(error)
+      res.status(500).json({Error: 'Internal server error'})
     }
+
   }
 }
