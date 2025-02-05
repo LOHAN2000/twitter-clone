@@ -87,7 +87,7 @@ export class PostController {
         return res.status(404).json({message: 'User not found'})
       }
 
-      const likedPosts = await Post.find({likes: userId}).sort({ createdAt: -1 }).populate({
+      const likedPosts = await Post.find({likes: userId}).sort({ updatedAt: -1 }).populate({
         path: 'user',
         select: '-password'
       }).populate({
@@ -202,31 +202,37 @@ export class PostController {
     }
   }
 
-  static async commentPost (req, res) {
+  static async commentPost(req, res) {
     try {
-      const postId = req.params.id 
-      const { text } = req.body
-      const userId = req.user._id
-
+      const postId = req.params.id;
+      const { text } = req.body;
+      const userId = req.user._id;
+  
       if (!text) {
-        return res.status(400).json({message: 'Text field is required'})
+        return res.status(400).json({ message: 'Text field is required' });
       }
-
-      const post = await Post.findById(postId)
-
+  
+      const post = await Post.findById(postId);
+  
       if (!post) {
-        return res.status(404).json({message: 'Post not found'})
+        return res.status(404).json({ message: 'Post not found' });
       }
+  
+      const comment = { user: userId, text };
+      post.comments.push(comment);
+      await post.save();
+  
+      const updatedPost = await Post.findById(postId).populate({ path: 'comments.user', select: '-password' });
 
-      const comment = {user: userId, text}
-      post.comments.push(comment)
-      await post.save()
-
-      res.status(200).json({message: 'Comment added succesfully', data: post.comments})
-
+      const sortedComments = updatedPost.comments.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )
+  
+      res.status(200).json({message: 'Comment added succesfully', data: sortedComments});
+  
     } catch (error) {
       console.log('Error in function commentPost', error);
-      res.status(500).json({message: 'Internal server error'});
+      res.status(500).json({ message: 'Internal server error' });
     }
   }
 
@@ -253,12 +259,13 @@ export class PostController {
 
       if (isLiked) {
         // dislike post
-        await Post.findByIdAndUpdate(postId, {$pull: {likes: userId}})
+        const updatedPost = await Post.findByIdAndUpdate(postId, {$pull: {likes: userId}}, {new: true})
         await User.findByIdAndUpdate(userId, {$pull: {likedPosts: postId}})
-        return res.status(200).json({message: 'Post unliked successfully'})
+
+        return res.status(200).json({message: 'Post unliked successfully', data: updatedPost.likes})
       } else {
         // like post
-        await Post.findByIdAndUpdate(postId, {$push: {likes: userId}})
+        const updatedPost = await Post.findByIdAndUpdate(postId, {$push: {likes: userId}}, {new: true})
         await User.findByIdAndUpdate(userId, {$push: {likedPosts: postId}})
 
         const newNotification = await Notification({
@@ -268,7 +275,7 @@ export class PostController {
         })
   
         await newNotification.save()
-        res.status(200).json({message: 'Post liked succesfully'})
+        res.status(200).json({message: 'Post liked succesfully', data: updatedPost.likes})
       }
 
     } catch (error) {

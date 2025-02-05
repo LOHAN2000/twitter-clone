@@ -23,7 +23,7 @@ export const Post = ({ post }) => {
 
   const date = formatPostDate(createdAt)
 
-  const isLiked = post.likes.includes(authUser.User._id)
+  const isLiked = post.likes?.includes(authUser.User._id)
 
   const { mutate: deletePost, isPending: isPendingDelete } = useMutation({
     mutationFn: async () => {
@@ -84,7 +84,17 @@ export const Post = ({ post }) => {
     },
     onSuccess: (data) => {
       toast.success(data.message)
-      queryClient.invalidateQueries({ queryKey: ['posts']})
+      queryClient.setQueryData(['posts'], (oldData) => {
+        if (!oldData) {
+          return []
+        }
+        return oldData.map((p) => {
+          if (p._id === post._id) {
+            return {...p, likes: data.data}
+          }
+          return p
+        })
+      })
     }
   })
 
@@ -119,7 +129,6 @@ export const Post = ({ post }) => {
     },
     onSuccess: (data) => {
       toast.success(data.message)
-      console.log(data.data)
       setResponse({ text: ''})
       queryClient.setQueryData(['posts'], (oldData) => {
         if (!oldData) {
@@ -127,7 +136,6 @@ export const Post = ({ post }) => {
         }
         return oldData.map((p) => {
           if (p._id === post._id) {
-            console.log(p)
             return {...p, comments: data.data}
           }
           return p

@@ -88,7 +88,7 @@ export const CreatePost = () => {
           )}
           <div className='flex flex-row justify-between w-full items-center border-t border-[rgb(47,51,54)] py-3'>
             <div className='flex flex-row h-full gap-x-2'>
-              <CiImageOn onClick={() => imgRef.current.click()} style={{color: 'rgb(29, 155, 240)'}} className='h-[1.4rem] w-[1.4rem]' />
+              <CiImageOn onClick={() => imgRef.current.click()} style={{color: 'rgb(29, 155, 240)'}} className='h-[1.4rem] w-[1.4rem] cursor-pointer'/>
               <MdEmojiEmotions onClick={() => setShowEmojiPicker(!showEmojiPicker)} style={{color: 'rgb(29, 155, 240)'}} className='h-[1.4rem] w-[1.4rem]'/>
               <input type='file' hidden ref={imgRef} onChange={handleImageRef}/>
             </div>

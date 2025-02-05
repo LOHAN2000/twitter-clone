@@ -60,9 +60,8 @@ export const ProfilePage = () => {
           throw new Error(data.Error)
         }
 
-        console.log(data.User)
         return data.User
-
+        
       } catch (error) {
         throw new Error(error)
       }

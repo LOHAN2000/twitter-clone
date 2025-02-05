@@ -36,6 +36,7 @@ export const Posts = ({ type, authUser, user }) => {
 
         const data = await response.json()
 
+        console.log(data)
         return data
 
       } catch (error) {
