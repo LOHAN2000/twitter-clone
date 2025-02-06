@@ -13,7 +13,7 @@ export class UserController {
         return res.status(400).json({message: 'Invalid username'})
       }
   
-      const user = await User.findOne({username}).select('-password')
+      const user = await User.findOne({username}).select('-password').populate({path: 'following', select: '-password'}).populate({path: 'followers', select: '-password'})
   
       if (!user) {
         return res.status(404).json({message: "User not found"})
@@ -200,6 +200,5 @@ export class UserController {
       console.log(error)
       res.status(500).json({Error: 'Internal server error'})
     }
-
   }
 }

@@ -64,6 +64,7 @@ export const ProfilePage = () => {
           throw new Error(data.Error)
         }
 
+        console.log(data)
         setDataForm(data.User)
         return data
         

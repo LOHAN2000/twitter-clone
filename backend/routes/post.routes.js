@@ -12,5 +12,6 @@ router.post('/create', protectRoute, PostController.createPost);
 router.post('/comment/:id', protectRoute, PostController.commentPost);
 router.post('/like/:id', protectRoute, PostController.likeUnlikePost);
 router.delete('/:id', protectRoute, PostController.deletePost);
+router.delete('/comment/:id', protectRoute, PostController.deleteComment)
 
 export default router;

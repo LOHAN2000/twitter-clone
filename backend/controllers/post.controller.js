@@ -283,4 +283,36 @@ export class PostController {
       res.status(500).json({message: 'Internal server error'})
     }
   }
+
+  static async deleteComment (req, res) {
+    try {
+      const commentId = req.params.id
+      const userId = req.user._id 
+
+      if (!commentId) {
+        return res.status(400).json({message: 'Id comment is required'})
+      }
+
+      const post = await Post.findOne({ 'comments._id': commentId})
+
+      if (!post) {
+        return res.status(404).json({message: 'Comment not found'})
+      }
+
+      const comment = await post.comments.id(commentId)
+
+      if (comment.user.toString() !== userId.toString()) {
+        return res.status(403).json({ message: 'You are not authorized to delete this comment' });
+      }
+
+      post.comments.pull(commentId)
+      await post.save()
+
+      res.status(200).json({ message: 'Comment deleted successfully', data: post.comments });
+
+    } catch (error) {
+      console.log('Error in function deleteComent ', error)
+      res.status(500).json({message: 'Internal server error'})
+    }
+  }
 }

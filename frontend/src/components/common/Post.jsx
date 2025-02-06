@@ -119,7 +119,7 @@ export const Post = ({ post }) => {
         if (data.Error) {
           throw new Error(data.error)
         }
-        console.log(data)
+
         return data
 
       } catch (error) {
@@ -187,7 +187,7 @@ export const Post = ({ post }) => {
         </div>
         <div className='mt-2 w-3/4 px-2'>
           <div className='flex flex-row justify-between items-center'>
-            <button onClick={() => document.getElementById(`modal_comment_${post._id}`).showModal()} className='flex flex-row text-[rgb(47,51,54)] item-center gap-x-1.5'><i className="fa-regular fa-comment pt-0.5"></i><h1 className='text-sm'>{comments.length}</h1></button>
+            <button onClick={() => {document.getElementById(`modal_comment_${post._id}`).showModal(), console.log(post)}} className='flex flex-row text-[rgb(47,51,54)] item-center gap-x-1.5'><i className="fa-regular fa-comment pt-0.5"></i><h1 className='text-sm'>{comments.length}</h1></button>
             <LuRepeat2 className='text-[rgb(47,51,54)] w-5 h-5'/>
             <a onClick={() => like(post._id)} className={`flex flex-row ${isLiked ? 'text-red-500' : 'text-[rgb(47,51,54)]'} items-center gap-x-1.5 cursor-pointer`}><i className={`${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart`}></i><h1 className='text-sm'>{likes.length}</h1></a>
           </div>
@@ -208,7 +208,6 @@ export const Post = ({ post }) => {
               </Link>
               <div className='flex flex-col w-full'>
                 <div className='flex flex-row items-center gap-x-2'>
-                  {/* TODO: Corregir el renderizado de la imagen de perfil en el modal de comentarios */}
                   <Link to={`/profile/${user.username}`}>
                     <h1 className='text-sm md:text-md font-semibold max-w-60 sm:max-w-52 lg:max-w-[12rem] xl:max-w-[14rem] truncate capitalize'>{user.fullname}</h1>
                   </Link>
