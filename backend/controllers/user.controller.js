@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import { v2 as cloudinary } from 'cloudinary'
 import Notification from "../models/notification.model.js"
 import User from "../models/user.model.js"
+import Post from '../models/post.model.js'
 
 export class UserController {
   static async getProfile (req, res) {
@@ -18,7 +19,9 @@ export class UserController {
         return res.status(404).json({message: "User not found"})
       }
 
-      res.status(200).json({User: user})
+      const postCount = await Post.countDocuments({ user: user._id });
+
+      res.status(200).json({User: user, postCount})
 
     } catch (error) {
       console.log('Error in function getProfile', error)      
@@ -100,7 +103,7 @@ export class UserController {
 
   static async updateProfile (req, res) {
     let { profileImg, coverImg } = req.body
-    const { fullname, username, email, name, bio, link, currentPassword, newPassword } = req.body
+    const { fullname, username, email, bio, link, currentPassword, newPassword } = req.body
 
     const userId = req.user._id
 
@@ -158,7 +161,7 @@ export class UserController {
         return res.status(400).json({ message: 'Bio must be less than 200 characters' });
       }
   
-      if (link && link.length > 20) {
+      if (link && link.length > 30) {
         return res.status(400).json({ message: 'Link must be less than 20 characters' });
       }
   

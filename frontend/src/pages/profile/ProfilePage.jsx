@@ -1,18 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { IoArrowBack } from "react-icons/io5";
-import { Link, useParams } from 'react-router-dom';
+import { data, Link, useParams } from 'react-router-dom';
 import { FaLink } from "react-icons/fa6";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { Posts } from '../../components/common/Posts';
 import { FaRegEdit } from "react-icons/fa";
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LoadSpinner } from '../../components/common/LoadSpinner';
 import { ProfileSkeleton } from '../../components/skeletons/ProfileSkeleton';
 import { formatMemberSinceDate } from '../../utils/date';
 import { useFollow } from '../../hooks/useFollow';
 import { useUpdate } from '../../hooks/useUpdate';
+import { toast } from 'sonner';
 
 export const ProfilePage = () => {
+
+  const queryClient = useQueryClient();
   
   const { username } = useParams()
   const { data:authUser } = useQuery({ queryKey: ['authUser']})
@@ -21,8 +24,9 @@ export const ProfilePage = () => {
   const [coverImg, setBannerProfile] = useState('')
   const imgProfRef = useRef(null)
   const bannerProfRef = useRef(null)
+  const [ updateImg, setUpdateImg] = useState(false)
   const [dataForm, setDataForm] = useState({
-  name: '',
+    fullname: '',
     username: '',
     bio: '',
     link: '',
@@ -30,7 +34,7 @@ export const ProfilePage = () => {
     currentPassword: '',
     newPassword: ''
   })
-
+  
   const handleImageCHange = (e, state) => {
     const file = e.target.files[0]
     if (file) {
@@ -60,7 +64,8 @@ export const ProfilePage = () => {
           throw new Error(data.Error)
         }
 
-        return data.User
+        setDataForm(data.User)
+        return data
         
       } catch (error) {
         throw new Error(error)
@@ -68,27 +73,76 @@ export const ProfilePage = () => {
     }
   })
 
-  const { mutate: update, isPending:isPendingUpdate } = useUpdate()
+  const { mutate: update, isPending:isPendingUpdate } = useMutation({
+    mutationFn: async (dataProfile) => {
+      try {
+        const response = await fetch(`/api/user/update`, {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dataProfile)
+        })
+        
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.message)
+        }
 
+        const data = await response.json()
 
+        if (data.Error) {
+          throw new Error(data.Error)
+        }
+
+        return data
+
+      } catch (error) {
+        console.log(error)
+        toast.error(error.message)
+      }
+    },
+    onSuccess: async (data) => {
+      toast.success(data.message);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['authUser']}),
+        queryClient.invalidateQueries({ queryKey: ['userProfile']})
+      ]);
+      
+      // Limpia los estados SOLO después del refetch
+      setTimeout(() => {
+        setImageProfile(null);
+        setBannerProfile(null);
+      }, 100);
+    }
+  })
 
   const { mutate: follow, isPending } = useFollow()
 
-  const isFollowing = authUser.User?.following.includes(user?._id)
+  const isFollowing = authUser?.User?.following.includes(user?.User?._id)
 
-  const date = formatMemberSinceDate(user?.createdAt)
+  const date = formatMemberSinceDate(user?.User.createdAt)
 
   useEffect(() => {
     refetch()
-    setBannerProfile('')
-    setImageProfile('')
-  }, [username, refetch])
+    setBannerProfile(null)
+    setImageProfile(null)
+  }, [username, refetch, updateImg])
 
-  const isMyProfile = user?._id === authUser.User._id
+  const isMyProfile = user?.User?._id === authUser?.User?._id
 
   const onSubmit = (e) => {
     e.preventDefault()
-    console.log(dataForm)
+    update(dataForm)
+    setDataForm({
+      fullname: '',
+      username: '',
+      bio: '',
+      link: '',
+      email: '',
+      currentPassword: '',
+      newPassword: ''
+    })
   }
 
   return (
@@ -98,8 +152,8 @@ export const ProfilePage = () => {
           <IoArrowBack style={{fill: 'white'}} className='w-6 h-6 sm:w-4 sm:h-4 md:w-6 md:h-6'/>
         </Link>
         <div className='flex flex-col'>
-          <p className='font-bold text-lg'>{user?.username}</p>
-          <span className='text-[rgb(47,51,54)] font-extralight'>511 posts</span>
+          <p hidden={isRefetching} className='font-bold text-lg'>{user?.User.username}</p>
+          <span hidden={isRefetching} className='text-[rgb(47,51,54)] font-extralight'>{`${user?.postCount} ${user?.postCount === 1 ? 'Post' : 'Posts'}`}</span>
         </div>
       </div>
       <div className='flex flex-col'>
@@ -108,13 +162,13 @@ export const ProfilePage = () => {
         ): (
           <>
           <div className='relative group/imgBanner'>
-            <img src={coverImg || user.coverImg || '../BannerPlaceholder.png'} className='object-cover object-center w-full h-52 sm:h-48 md:h-56'/>
+            <img src={coverImg || (isRefetching ? user.User.coverImg : user.User.coverImg) || '../BannerPlaceholder.png'} className='object-cover object-center w-full h-52 sm:h-48 md:h-56'/>
             <input type='file' hidden ref={bannerProfRef} onChange={(e) => {handleImageCHange(e, 'coverImg')}}/>
             {isMyProfile && (
               <FaRegEdit onClick={() => bannerProfRef.current.click()} className='absolute top-1 right-1 w-11 h-11 group-hover/imgBanner:opacity-100 opacity-0 bg-gray-400/50 p-2 rounded-xl cursor-pointer'/>
             )}
             <div className='relative group/imgProfile '>
-              <img src={profileImg || user.profileImg || '../Twitter_default_profile_400x400.png'} className='absolute w-32 h-32 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full object-cover object-center border-4 border-black -bottom-16 ms-4'/>
+              <img src={profileImg || (isRefetching ? user.User.profileImg : user.User.profileImg) || '../Twitter_default_profile_400x400.png'} className='absolute w-32 h-32 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full object-cover object-center border-4 border-black -bottom-16 ms-4'/>
               <input type='file' hidden ref={imgProfRef} onChange={(e) => {handleImageCHange(e, 'profileImg')}}/>
               {isMyProfile && (
                 <FaRegEdit onClick={() => imgProfRef.current.click()} className='absolute -top-[60px] left-[20px] sm:-top-[43.1px] sm:left-[22px] md:-top-[75.1px] md:left-[21.5px] h-[120px] w-[120px] sm:h-[101px] sm:w-[101px] md:w-[133px] md:h-[133px] bg-gray-300/50 fill-slate-100 p-8 sm:p-6 md:p-10 rounded-full group-hover/imgProfile:opacity-100 opacity-0 cursor-pointer'/>
@@ -123,31 +177,34 @@ export const ProfilePage = () => {
           </div>
           {isMyProfile ? (
             <div className='flex justify-end items-center m-3 gap-x-2'>
-              <button onClick={() => document.getElementById(`modal_edit_${user._id}`).showModal()} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-3'>Editar perfil</button>
+              <button onClick={() => document.getElementById(`modal_edit_${user.User._id}`).showModal()} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-3'>Editar perfil</button>
+              {(profileImg || coverImg) && (
+                <button onClick={() => {setBannerProfile(null), setImageProfile(null)}} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>Eliminar</button>
+              )}
               {(profileImg || coverImg) && (
                 <button onClick={() => update({profileImg, coverImg})} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>{isPendingUpdate ? <LoadSpinner/> : 'Confirmar'}</button>
               )}
             </div>
           ) : (
             <div className='flex justify-end items-center m-3'>
-              <button onClick={() => follow(user._id)} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>{isPending ? <LoadSpinner/> : isFollowing ? 'Dejar de Seguir' : 'Seguir'}</button>
+              <button onClick={() => follow(user.User._id)} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-4'>{isPending ? <LoadSpinner/> : isFollowing ? 'Dejar de Seguir' : 'Seguir'}</button>
             </div>
           )}
           <div className='flex flex-col m-4 mt-5 gap-y-1 overflow-hidden'>
-            <h1 className='font-extrabold text-md md:text-xl'>{user?.username}</h1>
-            <h1 className='text-[rgb(47,51,54)] text-sm sm:text-xs md:text-base'>@{user?.fullname}</h1>
-            {user?.bio && (<p className='mt-2 text-sm md:text-base'>{user?.bio}</p>)}
+            <h1 className='font-extrabold text-md md:text-xl'>{user.User.fullname}</h1>
+            <h1 className='text-[rgb(47,51,54)] text-sm sm:text-xs md:text-base'>@{user.User.username}</h1>
+            {user.User.bio && (<p className='mt-2 text-sm md:text-base'>{user.User.bio}</p>)}
             <div className='flex flex-row gap-x-1 items-center mt-1'>
-              {user.link?.length > 0 && (
+              {user.User.link?.length > 0 && (
                 <>
                   <FaLink className='text-[rgb(47,51,54)]'/> 
-                  <a className='flex items-center gap-x-1 underline text-sm sm:text-xs md:text-base text-blue-500 cursor-pointer max-w-md truncate'>{user.link}</a>
+                  <a className='flex items-center gap-x-1 underline text-sm sm:text-xs md:text-base text-blue-500 cursor-pointer max-w-md truncate'>{user.User.link}</a>
                 </>)}
-              <h1 className={`text-[rgb(47,51,54)] ${user.link ? 'ms-4' : 'ms-0'} flex items-center gap-x-1`}><FaRegCalendarAlt/>{date}</h1>
+              <h1 className={`text-[rgb(47,51,54)] ${user.User.link ? 'ms-4' : 'ms-0'} flex items-center gap-x-1`}><FaRegCalendarAlt/>{date}</h1>
             </div>
             <div className='flex row mt-2 gap-x-2 text-sm sm:text-xs md:text-base'>
-              <h1>{user.following.length} <span className='text-[rgb(47,51,56)]'>Siguiendo</span></h1>
-              <h1>{user.followers.length} <span className='text-[rgb(47,51,56)]'>Seguidores</span></h1>
+              <h1>{user.User.following.length} <span className='text-[rgb(47,51,56)]'>Siguiendo</span></h1>
+              <h1>{user.User.followers.length} <span className='text-[rgb(47,51,56)]'>Seguidores</span></h1>
             </div>
           </div>
           <div role="tablist" className="tabs tabs-bordered mb-2 grid w-[99.8%] mx-auto grid-cols-2 h-12 sticky top-0 bg-black">
@@ -159,8 +216,8 @@ export const ProfilePage = () => {
         )}
       </div>
       {/* MODAL_EDIT */}
-      <dialog id={`modal_edit_${user?._id}`} className='modal'>
-        <div className='modal-box p-4 pt-4 flex flex-col rounded-xl max-w-md  md:max-w-screen-xs'>
+      <dialog id={`modal_edit_${user?.User._id}`} className='modal'>
+        <div className='modal-box p-4 pt-5 flex flex-col rounded-xl max-w-md  md:max-w-screen-sm'>
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute left-1 top-4">✕</button>
           </form>
@@ -169,33 +226,33 @@ export const ProfilePage = () => {
               <h1>Editar perfil</h1>
               <button onClick={onSubmit} className='bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold py-1 px-3'>Confirmar</button>
             </div>
-            <form onSubmit={onSubmit} className='grid grid-cols-2 justify-center items-center mt-2 gap-x-1 gap-y-2'>
+            <form onSubmit={onSubmit} className='grid grid-cols-2 justify-center items-center mt-2 gap-x-1 gap-y-3'>
               <div className='relative'>
-                <input type="text" id='name' placeholder="" name='name' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
-                <label htmlFor="name" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Nombre</label>
+                <input type="text" id='fullname'  name='fullname' placeholder={dataForm?.fullname} className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <label htmlFor="name" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Nombre</label>
               </div>
               <div className='relative'>
-                <input type="text" id='username' placeholder="" name='username' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
-                <label htmlFor="username" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Username</label>
+                <input type="text" id='username' name='username' placeholder={dataForm?.username} className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <label htmlFor="username" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Username</label>
               </div>
               <div className='relative flex col-span-2 '>
-                <textarea type="text" id='bio' placeholder="" name='bio' className="textarea textarea-bordered w-full text-base pt-5 h-10 resize-none overflow-y-auto focus:h-20 peer transition-all duration-200" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
-                <label htmlFor="bio" className='absolute left-4 text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-[0px] peer-focus:text-blue-500 peer-focus:bg-black bg-black mt-[1px] h-5 w-[95%]'>Bio</label>
+                <textarea type="text" id='bio' name='bio' placeholder={dataForm?.bio} className="textarea textarea-bordered w-full text-base pt-5 h-10 resize-none overflow-y-auto focus:h-20 peer transition-all duration-200" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <label htmlFor="bio" className='absolute left-4 text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-[0px] peer-focus:text-blue-500 peer-focus:bg-black bg-black mt-[1px] h-5 w-[95%]'>Bio</label>
               </div>
               <div className='relative'>
-                <input type="text" id='Link' placeholder="" name='link' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
-                <label htmlFor="Link" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Link</label>
+                <input type="text" id='Link' name='link' placeholder={dataForm?.link} className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <label htmlFor="Link" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Link</label>
               </div>
               <div className='relative'>
-                <input type="text" id='Email' placeholder="" name='email' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
-                <label htmlFor="Email" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Email</label>
+                <input type="text" id='Email' name='email' placeholder={dataForm?.email} className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <label htmlFor="Email" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Email</label>
               </div>
               <div className='relative'>
-                <input type="text" id='password' placeholder="" name='currentPassword' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <input type="password" autocomplete="current-password" id='password' placeholder="" name='currentPassword' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
                 <label htmlFor="password" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Current password</label>
               </div>
               <div className='relative'>
-                <input type="text" id='password1' placeholder="" name='newPassword' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <input type="password" autocomplete="new-password" id='password1' placeholder="" name='newPassword' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
                 <label htmlFor="password1" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>New password</label>
               </div>
             </form>

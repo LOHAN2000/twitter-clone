@@ -13,9 +13,9 @@ export const Posts = ({ type, authUser, user }) => {
       case 'following':
         return `/api/post/following/${authUser.User._id}`
       case 'posts':
-        return `/api/post/user/${user.username}`
+        return `/api/post/user/${user.User.username}`
       case 'liked':
-        return `/api/post/likes/${user._id}`
+        return `/api/post/likes/${user.User._id}`
       default:
         return '/api/post/all'
     }
@@ -36,7 +36,6 @@ export const Posts = ({ type, authUser, user }) => {
 
         const data = await response.json()
 
-        console.log(data)
         return data
 
       } catch (error) {
@@ -54,6 +53,10 @@ export const Posts = ({ type, authUser, user }) => {
     <>
       {(isRefetching || isPending) &&(
         <div className='flex flex-col w-full'>
+          <PostSkeleton/>
+          <PostSkeleton/>
+          <PostSkeleton/>
+          <PostSkeleton/>
           <PostSkeleton/>
           <PostSkeleton/>
           <PostSkeleton/>
