@@ -37,7 +37,7 @@ export const RightPanel = () => {
   return (
     <div className='flex-[2_2_0] border-s border-[rgb(47,51,54)]'>
       <div className='flex flex-col sticky top-0 w-[85%] mx-auto h-screen py-2'>
-        <div className='flex flex-col border border-[rgb(47,51,54)] rounded-2xl py-3 gap-y-3'>
+        <div className='flex flex-col border border-[rgb(47,51,54)] rounded-2xl py-3 gap-y-3 overflow-hidden'>
           <h1 className='font-bold md:font-extrabold px-3'>A quién seguir</h1>
           {isPending && (
             <div className='flex flex-col'>

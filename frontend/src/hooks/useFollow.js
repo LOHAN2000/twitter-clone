@@ -25,16 +25,18 @@ export const useFollow = () => {
           throw new Error(data.Error)
         }
 
+        console.log(data)
         return data
 
       } catch (error) {
         toast.error(error.message)
       }
     },
-    onSuccess: (data) => {
+    onSuccess: (data, idUser) => {
       toast.success(data.message)
       queryClient.invalidateQueries({ queryKey: ['authUser']})
       queryClient.invalidateQueries({ queryKey: ['suggestedUsers']})
+      queryClient.invalidateQueries({ queryKey: ['userProfile']})
     }
   })
 }

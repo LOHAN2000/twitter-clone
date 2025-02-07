@@ -10,7 +10,7 @@ import { LoadSpinner } from '../../components/common/LoadSpinner';
 import { ProfileSkeleton } from '../../components/skeletons/ProfileSkeleton';
 import { formatMemberSinceDate } from '../../utils/date';
 import { useFollow } from '../../hooks/useFollow';
-import { useUpdate } from '../../hooks/useUpdate';
+import { RightPanelUser } from '../../components/common/RightPanelUser.jsx';
 import { toast } from 'sonner';
 
 export const ProfilePage = () => {
@@ -22,9 +22,8 @@ export const ProfilePage = () => {
   const [homeSection, setHomeSection] = useState('posts')
   const [profileImg, setImageProfile] = useState('')
   const [coverImg, setBannerProfile] = useState('')
-  const imgProfRef = useRef(null)
-  const bannerProfRef = useRef(null)
-  const [ updateImg, setUpdateImg] = useState(false)
+  const [updateImg, setUpdateImg] = useState(false)
+  const [userType, setUserType] = useState('')
   const [dataForm, setDataForm] = useState({
     fullname: '',
     username: '',
@@ -34,6 +33,8 @@ export const ProfilePage = () => {
     currentPassword: '',
     newPassword: ''
   })
+  const bannerProfRef = useRef(null)
+  const imgProfRef = useRef(null)
   
   const handleImageCHange = (e, state) => {
     const file = e.target.files[0]
@@ -204,8 +205,8 @@ export const ProfilePage = () => {
               <h1 className={`text-[rgb(47,51,54)] ${user.User.link ? 'ms-4' : 'ms-0'} flex items-center gap-x-1`}><FaRegCalendarAlt/>{date}</h1>
             </div>
             <div className='flex row mt-2 gap-x-2 text-sm sm:text-xs md:text-base'>
-              <h1>{user.User.following.length} <span className='text-[rgb(47,51,56)]'>Siguiendo</span></h1>
-              <h1>{user.User.followers.length} <span className='text-[rgb(47,51,56)]'>Seguidores</span></h1>
+              <h1 onClick={() => {setUserType('following'), document.getElementById(`modal_user_${userType}`).showModal()}}>{user.User.following.length} <span className='text-[rgb(47,51,56)] hover:underline cursor-pointer'>Siguiendo</span></h1>
+              <h1 onClick={() => {setUserType('followers'), document.getElementById(`modal_user_${userType}`).showModal()}}>{user.User.followers.length} <span className='text-[rgb(47,51,56)] hover:underline cursor-pointer'>Seguidores</span></h1>
             </div>
           </div>
           <div role="tablist" className="tabs tabs-bordered mb-2 grid w-[99.8%] mx-auto grid-cols-2 h-12 sticky top-0 bg-black">
@@ -249,15 +250,39 @@ export const ProfilePage = () => {
                 <label htmlFor="Email" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Email</label>
               </div>
               <div className='relative'>
-                <input type="password" autocomplete="current-password" id='password' placeholder="" name='currentPassword' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <input type="password" autoComplete="current-password" id='password' placeholder="" name='currentPassword' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
                 <label htmlFor="password" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Current password</label>
               </div>
               <div className='relative'>
-                <input type="password" autocomplete="new-password" id='password1' placeholder="" name='newPassword' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <input type="password" autoComplete="new-password" id='password1' placeholder="" name='newPassword' className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
                 <label htmlFor="password1" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>New password</label>
               </div>
             </form>
           </div>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button className=''>close</button>
+        </form>
+      </dialog>
+
+      {/* MODAL USERS */}
+      <dialog id={`modal_user_${userType}`} className='modal'>
+        <div className='modal-box p-4 pt-9 flex flex-col rounded-xl max-w-md md:max-w-screen-sm'>
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute left-1 top-1">✕</button>
+            <div className='flex flex-col w-full max-h-96 rounded-full'>
+              <h1 className='text-xl font-bold'>{userType === 'following' ? 'Siguiendo' : 'Seguidores'}</h1>
+              {userType === 'following' ? (
+                user?.User.following.map((user) => (
+                  <RightPanelUser user={user} key={user._id} type={'profile'}/>
+                ))
+              ) : (
+                user?.User.followers.map((user) => (
+                  <RightPanelUser user={user} key={user._id} type={'profile'}/>
+                ))
+              )}
+            </div>
+          </form>
         </div>
         <form method="dialog" className="modal-backdrop">
           <button className=''>close</button>

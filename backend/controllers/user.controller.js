@@ -49,12 +49,12 @@ export class UserController {
 
       if (isFollowing) {
         await User.findByIdAndUpdate(id, {$pull: {followers: currentUser._id}})
-        await User.findByIdAndUpdate(currentUser._id, {$pull: {following: id}})
-        res.status(200).json({message: 'User unfollow successfully'})
+        const updatedData = await User.findByIdAndUpdate(currentUser._id, {$pull: {following: id}}, {new: true})
+        res.status(200).json({message: 'User unfollow successfully', data: updatedData})
 
       } else {
         await User.findByIdAndUpdate(id, {$push: {followers: currentUser._id}})
-        await User.findByIdAndUpdate(currentUser._id, {$push: {following: id}})
+        const updatedData = await User.findByIdAndUpdate(currentUser._id, {$push: {following: id}}, {new: true})
         
         const newNotification = new Notification({
           type: 'follow',
@@ -64,7 +64,7 @@ export class UserController {
         
         await newNotification.save()
 
-        res.status(200).json({message: 'User follow successfullly'})
+        res.status(200).json({message: 'User follow successfullly', data: updatedData})
       }
     } catch (error) {
       console.log('Error in function followUnfollower', error.message) 
