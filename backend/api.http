@@ -60,6 +60,10 @@ Content-Type: application/json
   "coverImg": "https://static.bandainamcoent.eu/high/dark-souls/dark-souls-3/00-page-setup/ds3_game-thumbnail.jpg"
 }
 
+###
+
+GET http://localhost:8888/api/user/search?q=lo
+
 ### POST ENDPOINTS
 
 POST http://localhost:8888/api/post/create

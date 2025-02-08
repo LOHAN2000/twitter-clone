@@ -201,4 +201,29 @@ export class UserController {
       res.status(500).json({Error: 'Internal server error'})
     }
   }
+
+  static async search (req, res) {
+    try {
+      const { q } = req.query
+
+      if (!q) {
+        return res.status(400).json({message: 'The query is required'})
+      }
+
+      const regex = new RegExp(q, 'i')
+
+      const users = await User.find({
+        $or: [
+          { username: regex },
+          { fullname: regex}
+        ]
+      }).select('-password')
+
+      res.status(200).json({message: 'Search successfully', users})
+
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({Error: 'Internal server error'})
+    }
+  }
 }
