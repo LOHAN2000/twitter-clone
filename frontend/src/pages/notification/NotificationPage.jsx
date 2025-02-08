@@ -24,8 +24,6 @@ export const NotificationPage = () => {
         if (data.Error) {
           throw new Error(data.Error)
         }
-
-        console.log(data.notifications)
         return data.notifications
 
       } catch (error) {

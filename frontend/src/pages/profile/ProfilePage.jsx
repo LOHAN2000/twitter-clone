@@ -65,8 +65,6 @@ export const ProfilePage = () => {
           throw new Error(data.Error)
         }
 
-        console.log(data)
-        setDataForm(data.User)
         return data
         
       } catch (error) {
@@ -106,12 +104,12 @@ export const ProfilePage = () => {
     },
     onSuccess: async (data) => {
       toast.success(data.message);
+      console.log(data)
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['authUser']}),
         queryClient.invalidateQueries({ queryKey: ['userProfile']})
       ]);
       
-      // Limpia los estados SOLO después del refetch
       setTimeout(() => {
         setImageProfile(null);
         setBannerProfile(null);
@@ -133,18 +131,10 @@ export const ProfilePage = () => {
 
   const isMyProfile = user?.User?._id === authUser?.User?._id
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault()
-    update(dataForm)
-    setDataForm({
-      fullname: '',
-      username: '',
-      bio: '',
-      link: '',
-      email: '',
-      currentPassword: '',
-      newPassword: ''
-    })
+    console.log(dataForm)
+    await update(dataForm)
   }
 
   return (
@@ -205,8 +195,8 @@ export const ProfilePage = () => {
               <h1 className={`text-[rgb(47,51,54)] ${user.User.link ? 'ms-4' : 'ms-0'} flex items-center gap-x-1`}><FaRegCalendarAlt/>{date}</h1>
             </div>
             <div className='flex row mt-2 gap-x-2 text-sm sm:text-xs md:text-base'>
-              <h1 onClick={() => {setUserType('following'), document.getElementById(`modal_user_${userType}`).showModal()}}>{user.User.following.length} <span className='text-[rgb(47,51,56)] hover:underline cursor-pointer'>Siguiendo</span></h1>
-              <h1 onClick={() => {setUserType('followers'), document.getElementById(`modal_user_${userType}`).showModal()}}>{user.User.followers.length} <span className='text-[rgb(47,51,56)] hover:underline cursor-pointer'>Seguidores</span></h1>
+              <h1 onClick={() => {setUserType('following'), document.getElementById(`modal_user_${userType}`).showModal()}}>{user.User.following?.length} <span className='text-[rgb(47,51,56)] hover:underline cursor-pointer'>Siguiendo</span></h1>
+              <h1 onClick={() => {setUserType('followers'), document.getElementById(`modal_user_${userType}`).showModal()}}>{user.User.followers?.length} <span className='text-[rgb(47,51,56)] hover:underline cursor-pointer'>Seguidores</span></h1>
             </div>
           </div>
           <div role="tablist" className="tabs tabs-bordered mb-2 grid w-[99.8%] mx-auto grid-cols-2 h-12 sticky top-0 bg-black">
@@ -230,23 +220,23 @@ export const ProfilePage = () => {
             </div>
             <form onSubmit={onSubmit} className='grid grid-cols-2 justify-center items-center mt-2 gap-x-1 gap-y-3'>
               <div className='relative'>
-                <input type="text" id='fullname'  name='fullname' placeholder={dataForm?.fullname} className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <input type="text" id='fullName' autoComplete='fullName'  name='fullname' placeholder={dataForm?.fullname} className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
                 <label htmlFor="name" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Nombre</label>
               </div>
               <div className='relative'>
-                <input type="text" id='username' name='username' placeholder={dataForm?.username} className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <input type="text" id='username' autoComplete='username' name='username' placeholder={dataForm?.username} className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
                 <label htmlFor="username" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Username</label>
               </div>
               <div className='relative flex col-span-2 '>
-                <textarea type="text" id='bio' name='bio' placeholder={dataForm?.bio} className="textarea textarea-bordered w-full text-base pt-5 h-10 resize-none overflow-y-auto focus:h-20 peer transition-all duration-200" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <textarea type="text" id='bio' autoComplete='off' name='bio' placeholder={dataForm?.bio} className="textarea textarea-bordered w-full text-base pt-5 h-10 resize-none overflow-y-auto focus:h-20 peer transition-all duration-200" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
                 <label htmlFor="bio" className='absolute left-4 text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-[0px] peer-focus:text-blue-500 peer-focus:bg-black bg-black mt-[1px] h-5 w-[95%]'>Bio</label>
               </div>
               <div className='relative'>
-                <input type="text" id='Link' name='link' placeholder={dataForm?.link} className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <input type="text" id='Link' autoComplete='link' name='link' placeholder={dataForm?.link} className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
                 <label htmlFor="Link" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Link</label>
               </div>
               <div className='relative'>
-                <input type="text" id='Email' name='email' placeholder={dataForm?.email} className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
+                <input type="text" id='Email' autoComplete='email' name='email' placeholder={dataForm?.email} className="input input-bordered w-full text-base pt-5 peer" onChange={(e) => setDataForm({...dataForm, [e.target.name]: e.target.value})}/>
                 <label htmlFor="Email" className='absolute left-4  text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:text-sm peer-focus:top-1 peer-focus:text-blue-500'>Email</label>
               </div>
               <div className='relative'>
@@ -273,7 +263,7 @@ export const ProfilePage = () => {
             <div className='flex flex-col w-full max-h-96 rounded-full'>
               <h1 className='text-xl font-bold'>{userType === 'following' ? 'Siguiendo' : 'Seguidores'}</h1>
               {userType === 'following' ? (
-                user?.User.following.map((user) => (
+                user?.User?.following?.map((user) => (
                   <RightPanelUser user={user} key={user._id} type={'profile'}/>
                 ))
               ) : (

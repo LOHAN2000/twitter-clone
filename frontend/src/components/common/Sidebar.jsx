@@ -55,9 +55,9 @@ export const Sidebar = () => {
             </Link>
             <div className='flex flex-col w-full '>
               <Link to={`/profile/${authUser.User.username}`}>
-                <h1 className='text-sm md:text-md'>{authUser.User.username}</h1>
+                <h1 className='text-sm md:text-md'>{authUser.User.fullname}</h1>
               </Link>
-              <h1 className='sm:text-xs lg:text-base text-gray-600'>{authUser.User.fullname}</h1>
+              <h1 className='sm:text-xs lg:text-base text-gray-600'>{authUser.User.username}</h1>
             </div>
           </div>
           <IoExitOutline onClick={() => logout()} className='md:w-[25px] md:h-[30px] cursor-pointer overflow-y-hidden'/>

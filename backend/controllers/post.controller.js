@@ -29,7 +29,7 @@ export class PostController {
 
       await newPost.save()
 
-      res.status(200).json({message: 'Post At', post: newPost})
+      res.status(200).json({message: 'Post Add', post: newPost})
       
     } catch (error) {
       console.log('Error in function createPost', error)
@@ -308,6 +308,11 @@ export class PostController {
       post.comments.pull(commentId)
       await post.save()
 
+      await post.populate({
+        path: 'comments.user',
+        select: '-password'
+      });
+  
       res.status(200).json({ message: 'Comment deleted successfully', data: post.comments });
 
     } catch (error) {

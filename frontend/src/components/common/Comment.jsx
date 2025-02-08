@@ -1,12 +1,61 @@
 import React from 'react'
 import { formatPostDate } from '../../utils/date'
 import { Link } from 'react-router-dom'
+import { FaTrash } from "react-icons/fa";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
-export const Comment = ({ comment }) => {
+export const Comment = ({ comment, postId }) => {
 
   const { user, text, createdAt } = comment
 
   const date = formatPostDate(createdAt)
+
+  const { data:authUser } = useQuery({ queryKey: ['authUser'] })
+  const queryClient = useQueryClient()
+
+  const isMyComment = authUser.User._id === user._id
+  
+  const { mutate: deleteComment, isPending: isPendingDeleteComment } = useMutation({
+    mutationFn: async (idComment) => {
+      try {
+        const response = await fetch(`/api/post/comment/${idComment}`, {
+          method: 'DELETE'
+        })
+        
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.message)
+        }
+
+        const data = await response.json()
+
+        if (data.Error) {
+          throw new Error(data.Error)
+        }
+
+        return data
+
+      } catch (error) {
+        throw new Error(error.message)
+      }
+    },
+    onSuccess: async (data) => {
+      toast.success(data.message)
+      queryClient.setQueriesData({ queryKey: ['posts']}, (oldData) => {
+        if (!oldData) {
+          return []
+        }
+        return oldData.map((p) => {
+          if (p._id === postId) {
+            const objeto = {...p, comments: data.data} 
+            return objeto
+          }
+          return p
+        })
+      })
+    }
+  })
 
   return (
     <div className='flex flex-row gap-x-3'>
@@ -25,6 +74,11 @@ export const Comment = ({ comment }) => {
         </div>
         <h1 className='text-sm md:text-base'>{text}</h1>
       </div>
+      {isMyComment && (
+        <div className='flex me-1 items-center cursor-pointer'>
+          <h1 onClick={() => deleteComment(comment._id)}><FaTrash/></h1>
+        </div>
+      )}
     </div>
   )
 }

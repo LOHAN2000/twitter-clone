@@ -10,8 +10,6 @@ export const RightPanelUser = ({user, type}) => {
   const { mutate: follow, isPending } = useFollow()
   const [isMobile, setIsMobile] = useState('')
   const isFollowing = authUser?.User?.following.includes(user?._id)
-  console.log(user)
-
 
   return (
     <div className={`flex ${type === 'profile' ? 'flex-row items-center' : 'sm:flex-col lg:flex-row items-start'} hover:bg-[rgb(231,233,234,0.1)] px-3 py-2`}>

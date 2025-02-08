@@ -6,6 +6,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 
+import Picker from '@emoji-mart/react';
+import data from '@emoji-mart/data'
+
 export const CreatePost = () => {
 
   const queryClient = useQueryClient()
@@ -14,7 +17,6 @@ export const CreatePost = () => {
     text: ''
   })
   const [img, setImg] = useState(null)
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const imgRef = useRef(null)
 
   const { mutate: sendForm, isPending } = useMutation({
@@ -69,6 +71,15 @@ export const CreatePost = () => {
     sendForm({text, img})
   }
 
+  const [showPicker, setShowPicker] = useState(false);
+  const handleEmojiSelect = (emoji) => {
+    setFormData((prev) => ({
+      ...prev,
+      text: prev.text + emoji.native
+    }));
+    setShowPicker(false);
+  };
+
   return (
     <div className='flex flex-row w-full pt-7 sm:pt-6 px-4 gap-x-3 border-b border-[rgb(47,51,54)]'>
       <Link to={authUser.User.username}>
@@ -89,8 +100,21 @@ export const CreatePost = () => {
           <div className='flex flex-row justify-between w-full items-center border-t border-[rgb(47,51,54)] py-3'>
             <div className='flex flex-row h-full gap-x-2'>
               <CiImageOn onClick={() => imgRef.current.click()} style={{color: 'rgb(29, 155, 240)'}} className='h-[1.4rem] w-[1.4rem] cursor-pointer'/>
-              <MdEmojiEmotions onClick={() => setShowEmojiPicker(!showEmojiPicker)} style={{color: 'rgb(29, 155, 240)'}} className='h-[1.4rem] w-[1.4rem]'/>
-              <input type='file' hidden ref={imgRef} onChange={handleImageRef}/>
+              <MdEmojiEmotions onClick={() => setShowPicker(!showPicker)} style={{color: 'rgb(29, 155, 240)'}} className='h-[1.4rem] w-[1.4rem]'/>
+              {showPicker && (
+              <div className="emoji-picker absolute bg-[rgb(21,22,23)] rounded-xl py-5 px-1">
+                <div className='relative'>
+                  <button onClick={() => setShowPicker(false)} className='absolute -top-4 right-0 text-white z-20'><IoClose className='w-5 h-5'/></button>
+                  <Picker
+                    data={data}
+                    onEmojiSelect={handleEmojiSelect}
+                    theme="dark"
+                    previewPosition="none"
+                  />
+                </div>
+              </div>
+              )}
+            <input type='file' hidden ref={imgRef} onChange={handleImageRef}/>
             </div>
             <button className={`bg-white text-black rounded-full hover:bg-slate-100 btn-sm font-semibold ${!formData.text.length && !img ? 'btn btn-disabled' : ''} py-0 sm:py-1 sm:px-3`}>{isPending ? 'Cargando...' : 'Postear'}</button>
           </div>

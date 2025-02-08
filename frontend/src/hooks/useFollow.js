@@ -25,7 +25,6 @@ export const useFollow = () => {
           throw new Error(data.Error)
         }
 
-        console.log(data)
         return data
 
       } catch (error) {
@@ -36,7 +35,13 @@ export const useFollow = () => {
       toast.success(data.message)
       queryClient.invalidateQueries({ queryKey: ['authUser']})
       queryClient.invalidateQueries({ queryKey: ['suggestedUsers']})
-      queryClient.invalidateQueries({ queryKey: ['userProfile']})
+      queryClient.setQueriesData({ queryKey: ['userProfile']}, (oldData) => {
+        if (!oldData) {
+          return []
+        }
+        const objeto = {...oldData, User: {...oldData.User, following: data.updatedData.following}}
+        return objeto
+      }) 
     }
   })
 }
