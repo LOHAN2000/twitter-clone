@@ -3,7 +3,7 @@ import { RightPanelSkeleton } from '../skeletons/RightPanelSkeleton'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { RightPanelUser } from './RightPanelUser'
-
+import { Search } from './Search'
 export const RightPanel = () => {
 
   const { data: suggestedUsers, isPending } = useQuery({
@@ -36,8 +36,11 @@ export const RightPanel = () => {
 
   return (
     <div className='flex-[2_2_0] border-s border-[rgb(47,51,54)]'>
-      <div className='flex flex-col sticky top-0 w-[85%] mx-auto h-screen py-2'>
-        <div className='flex flex-col border border-[rgb(47,51,54)] rounded-2xl py-3 gap-y-3 overflow-hidden'>
+      <div className='flex flex-col sticky top-0 w-[85%] mx-auto h-screen py-2 gap-y-3'>
+        <div className='flex flex-col border border-[rgb(47,51,54)] rounded-2xl gap-y-3'>
+          <Search/>
+        </div>
+        <div className='flex flex-col border border-[rgb(47,51,54)] rounded-2xl py-3 gap-y-3'>
           <h1 className='font-bold md:font-extrabold px-3'>A quién seguir</h1>
           {isPending && (
             <div className='flex flex-col'>

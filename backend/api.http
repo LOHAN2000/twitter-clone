@@ -62,7 +62,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8888/api/user/search?q=lo
+GET http://localhost:8888/api/user/search?q=anjh
 
 ### POST ENDPOINTS
 
@@ -106,7 +106,6 @@ GET http://localhost:8888/api/post/following/677c392411db448633732bae
 ###
 
 GET http://localhost:8888/api/post/user/Angheluchi
-
 
 ###
 
