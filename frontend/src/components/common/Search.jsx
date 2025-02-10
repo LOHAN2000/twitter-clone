@@ -46,11 +46,11 @@ export const Search = () => {
 
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col w-full'>
       <input onChange={(e) => setSearchTerm({...searchTerm, [e.target.name]: e.target.value})} type='text' name='search' className='relative h-10 bg-black border-0 rounded-2xl focus:outline-none ps-7' placeholder='Buscar'/>
       <label className='absolute left-2 flex text-center pt-[12px]'><IoSearchOutline/></label>
       {searchResults && (
-        <div className='absolute top-14 flex flex-col border border-[rgb(47,51,54)] rounded-2xl gap-y-3 w-full bg-black shadow-md shadow-slate-600'>
+        <div className='absolute top-14 flex flex-col border border-[rgb(47,51,54)] rounded-2xl gap-y-3 w-full bg-black shadow-md shadow-slate-600 overflow-hidden'>
           {searchResults?.users.map((user) => (
             <RightPanelUser user={user} key={user._id} type={'search'}/>
           ))}

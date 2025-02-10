@@ -12,6 +12,8 @@ import { MdOutlineEmail } from "react-icons/md"
 import { FaRegCircleUser } from "react-icons/fa6"
 import { useQuery } from "@tanstack/react-query"
 import { LoadSpinner } from "./components/common/LoadSpinner.jsx"
+import { IoSearchOutline } from "react-icons/io5"
+import { Search } from "./components/common/Search.jsx"
 
 function App() {
 
@@ -74,6 +76,7 @@ function App() {
           <Route path='/singup' element={!authUser ? <SignupPage/> : <Navigate to='/'/>}/>
           <Route path='/notifications' element={authUser ? <NotificationPage/> : <Navigate to='/login'/>}/>
           <Route path='/profile/:username' element={authUser ? <ProfilePage/> : <Navigate to='/login'/>}/>
+          <Route path='/search' element={authUser && isMobile ? <Search/> : <Navigate to='/'/>}/>
         </Routes>
       {!(location.pathname === '/login' || location.pathname === '/singup') && !isMobile && authUser &&  <RightPanel />}
       {isMobile && !(location.pathname === '/login' || location.pathname === '/singup') && (
@@ -86,6 +89,11 @@ function App() {
           <Link to={'/notifications'} className={`${location.pathname === '/notifications' ? 'active' : ''}`}>
             <button className="">
               <MdOutlineEmail className='h-8 w-8'/>
+            </button>
+          </Link>
+          <Link to={'/search'} className={`${location.pathname === '/search' ? 'active' : ''}`}>
+            <button className="">
+              <IoSearchOutline className='h-8 w-8'/>
             </button>
           </Link>
           <Link to={`/profile/${authUser.User.username}`} className={`${location.pathname === '/profile' ? 'active' : ''}`}>
