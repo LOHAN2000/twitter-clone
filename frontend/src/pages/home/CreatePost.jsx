@@ -82,7 +82,7 @@ export const CreatePost = () => {
 
   return (
     <div className='flex flex-row w-full pt-7 sm:pt-6 px-4 gap-x-3 border-b border-[rgb(47,51,54)]'>
-      <Link to={authUser.User.username}>
+      <Link to={`/profile/${authUser.User.username}`}>
         <div className='w-10 h-10'>
          <img src={authUser.User.profileImg ||'/Twitter_default_profile_400x400.png'} className='object-cover rounded-full w-full h-full'/>
         </div>
