@@ -96,7 +96,7 @@ function App() {
               <IoSearchOutline className='h-8 w-8'/>
             </button>
           </Link>
-          <Link to={`/profile/${authUser.User.username}`} className={`${location.pathname === '/profile' ? 'active' : ''}`}>
+          <Link to={`/profile/${authUser?.User?.username}`} className={`${location.pathname === '/profile' ? 'active' : ''}`}>
             <button>
               <FaRegCircleUser className='h-8 w-8'/>
             </button>
